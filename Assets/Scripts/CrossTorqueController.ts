@@ -68,7 +68,7 @@ export class CrossTorqueController extends BaseScriptComponent {
     }
 
     if (this.sfxAudio) {
-      this.sfxAudio.playbackMode = Audio.PlaybackMode.LowLatency;
+      this.sfxAudio.playbackMode = (Audio as any).PlaybackMode.LowLatency;
     }
 
     this.buildOrBindSceneHierarchy();

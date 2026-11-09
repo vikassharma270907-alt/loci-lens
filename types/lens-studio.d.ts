@@ -62,6 +62,7 @@ declare class Material {}
 
 declare class AudioTrack {}
 
+// Merges with DOM Audio or Lens Studio Audio
 declare namespace Audio {
   enum PlaybackMode {
     LowLatency = 0,
@@ -69,8 +70,15 @@ declare namespace Audio {
   }
 }
 
+interface AudioConstructor {
+  PlaybackMode: {
+    LowLatency: number;
+    Default: number;
+  };
+}
+
 declare class AudioComponent {
-  playbackMode: Audio.PlaybackMode;
+  playbackMode: any;
   audioTrack?: AudioTrack;
   play(loops: number): void;
 }
@@ -79,7 +87,8 @@ declare enum TextFillMode {
   Solid = 0,
 }
 
-declare class Text {
+// Augment DOM Text interface for Lens Studio Component.Text
+interface Text {
   text: string;
   size: number;
   textFill: {

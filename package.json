@@ -1,27 +1,26 @@
 {
-  "name": "torquelock-ar",
+  "name": "crosstorque-ar",
   "version": "1.0.0",
-  "description": "TorqueLock AR — Spatial Memory and Procedural Training Coach for Snap SPECS",
-  "main": "Assets/Scripts/index.ts",
+  "description": "CrossTorque AR — 1:1 Star-Pattern Fastener & Gasket Compression Coach for Snap SPECS",
+  "main": "Assets/Scripts/CrossTorqueController.ts",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/torquelock.test.cjs tests/loci-lens.test.cjs",
+    "test": "node --test tests/crosstorque.test.cjs tests/torquelock.test.cjs tests/loci-lens.test.cjs",
+    "test:crosstorque": "node --test tests/crosstorque.test.cjs",
     "test:torquelock": "node --test tests/torquelock.test.cjs",
     "test:loci": "node --test tests/loci-lens.test.cjs",
     "typecheck": "tsc --noEmit",
     "preview": "node -e \"const http=require('http'), fs=require('fs'), path=require('path'); const server=http.createServer((req,res)=>{ let raw=req.url.split('?')[0].replace(/^\\//,''); const targets=(!raw||raw==='')?['preview/index.html','index.html']:[raw,path.join('preview',raw),path.join('preview',path.basename(raw))]; const found=targets.find(t=>fs.existsSync(t)&&fs.statSync(t).isFile()); if(!found){ res.writeHead(404,{'Content-Type':'text/plain'}); return res.end('Not found: '+req.url); } const ext=path.extname(found).slice(1).toLowerCase(); const ct={'html':'text/html; charset=utf-8','js':'application/javascript; charset=utf-8','css':'text/css; charset=utf-8','json':'application/json','png':'image/png','svg':'image/svg+xml','mp4':'video/mp4'}[ext]||'text/plain'; res.writeHead(200,{'Content-Type':ct,'Cache-Control':'no-cache'}); fs.createReadStream(found).pipe(res); }); server.listen(8080,()=>console.log('TorqueLock AR SPECS Preview running at http://localhost:8080/'));\""
-  },
-  "devDependencies": {
-    "typescript": "^5.4.0"
   },
   "keywords": [
     "snap",
     "spectacles",
     "lens-studio",
     "augmented-reality",
-    "torquelock",
-    "memory-palace",
-    "method-of-loci",
+    "crosstorque",
+    "star-sequence",
+    "flange-warp",
+    "asme-pcc-1",
     "procedural-training",
     "clad",
     "leaf"
