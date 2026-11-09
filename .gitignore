@@ -1,7 +1,10 @@
-# Environment and agent cache
-.agents/
 node_modules/
 dist/
 .DS_Store
 Thumbs.db
 *.log
+
+.vercel
+.env*
+temp_audio/*.wav
+.agents/

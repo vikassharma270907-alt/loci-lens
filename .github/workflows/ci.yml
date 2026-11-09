@@ -1,4 +1,4 @@
-﻿name: Loci Lens CI - Acceptance & LEAF Verification
+name: TorqueLock AR CI - Acceptance & LEAF Verification
 
 on:
   push:
@@ -26,5 +26,5 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Run Loci Lens Acceptance Tests
+      - name: Run TorqueLock AR Acceptance Tests
         run: npm test

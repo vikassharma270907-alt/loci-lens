@@ -1,0 +1,30 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "cleanUrls": true,
+  "redirects": [
+    {
+      "source": "/preview",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/preview/:path*",
+      "destination": "/:path*",
+      "permanent": true
+    }
+  ],
+  "rewrites": [
+    {
+      "source": "/preview",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/preview/index.html",
+      "destination": "/index.html"
+    },
+    {
+      "source": "/preview/:path*",
+      "destination": "/:path*"
+    }
+  ]
+}
