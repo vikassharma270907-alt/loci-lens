@@ -1,4 +1,4 @@
-name: TorqueLock AR CI - Acceptance & LEAF Verification
+name: CI Acceptance and LEAF Verification
 
 on:
   push:
@@ -12,7 +12,6 @@ permissions:
 
 jobs:
   test:
-    name: Node.js Test Suite (${{ matrix.os }} - Node ${{ matrix.node-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -24,19 +23,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Use Node.js ${{ matrix.node-version }}
+      - name: Setup Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: TypeScript Typecheck
+      - name: TypeScript typecheck
         run: npm run typecheck
 
-      - name: Verify Release and Preview Assets
+      - name: Verify preview assets
         run: node scripts/verify-assets.cjs
 
-      - name: Run TorqueLock AR Acceptance Tests
+      - name: Run acceptance tests
         run: npm test
