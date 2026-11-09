@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Loci Lens — Snap SPECS Interactive Optical Preview Simulator</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="viewport-container">
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- Simulated SPECS Optical Waveguide Display Frame (37° V x 32° H) -->
+    <div class="specs-waveguide-frame">
+      <div class="specs-badge">Snap SPECS Waveguide FOV (37° V × 32° H)</div>
+    </div>
+
+    <!-- Peripheral HUD (Lower Right Margin, Lu et al. 2020) -->
+    <div class="peripheral-hud" id="peripheral-hud">
+      <div class="hud-ring-label">Progress</div>
+      <div class="hud-ring-val" id="hud-val">6</div>
+      <div class="hud-ring-sub" id="hud-sub">Deck Cards</div>
+    </div>
+
+    <!-- Out-of-View Directional Chevron Cue -->
+    <div class="out-of-view-chevron" id="out-of-view-cue">➤</div>
+  </div>
+
+  <!-- Sidebar Diagnostic, State Controller & LEAF Runner -->
+  <div id="control-panel">
+    <h2>
+      <span style="color:#38bdf8;">✦</span> Loci Lens SPECS Simulator
+    </h2>
+    <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">
+      Augmented Reality Memory Palace for Snap SPECS
+    </p>
+
+    <!-- Mode Switcher -->
+    <div class="panel-section">
+      <h3>Experience Mode</h3>
+      <div class="mode-btn-group">
+        <button class="mode-btn active" data-mode="onboard">1. Onboard</button>
+        <button class="mode-btn" data-mode="place">2. Place</button>
+        <button class="mode-btn" data-mode="stroll">3. Stroll</button>
+        <button class="mode-btn" data-mode="test">4. Test</button>
+        <button class="mode-btn" data-mode="summary">5. Summary</button>
+      </div>
+    </div>
+
+    <!-- Live Telemetry -->
+    <div class="panel-section">
+      <h3>Live Telemetry</h3>
+      <div class="stat-row">
+        <span>Active State:</span>
+        <span class="val" id="stat-mode">ONBOARD</span>
+      </div>
+      <div class="stat-row">
+        <span>Anchored Loci:</span>
+        <span class="val" id="stat-placed">0/6</span>
+      </div>
+      <div class="stat-row">
+        <span>Cards Tested:</span>
+        <span class="val" id="stat-tested">0/6</span>
+      </div>
+      <div class="stat-row">
+        <span>Recall Accuracy:</span>
+        <span class="val" id="stat-acc">0%</span>
+      </div>
+      <div class="stat-row">
+        <span>Optical Focal Plane:</span>
+        <span class="val">1.10 m (Sweet Spot)</span>
+      </div>
+    </div>
+
+    <!-- Test Interaction Actions (for Test Mode) -->
+    <div class="panel-section">
+      <h3>Test Controls (SIK Emulation)</h3>
+      <div style="display:flex; gap:8px;">
+        <button class="mode-btn" style="flex:1; background:#15803d; border-color:#22c55e;" onclick="window.triggerGotIt()">
+          ✓ Mark Got It
+        </button>
+        <button class="mode-btn" style="flex:1; background:#b45309; border-color:#f59e0b;" onclick="window.triggerMissed()">
+          ✕ Mark Missed
+        </button>
+      </div>
+    </div>
+
+    <!-- Automated LEAF Test Runner -->
+    <div class="panel-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
+        <h3 style="margin-bottom:0;">Automated LEAF Harness</h3>
+        <button id="run-leaf-btn" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">
+          Run LEAF
+        </button>
+      </div>
+      <pre class="leaf-log" id="leaf-log">Ready. Click 'Run LEAF' to verify all 6 Done Criteria scenarios.</pre>
+    </div>
+
+    <!-- Navigation & Hotkey Guide -->
+    <div class="panel-section instructions-card">
+      <h3 style="color:#94a3b8;">Controls Guide</h3>
+      <p>• <strong>Primary Click</strong>: SIK Pinch (pin card, reveal answer, confirm).</p>
+      <p>• <strong>Mouse Drag</strong>: Look around 360° room.</p>
+      <p>• <strong>WASD / QE</strong>: Walk through room.</p>
+      <p>• <strong>Keys 1-5</strong>: Jump directly between modes.</p>
+    </div>
+  </div>
+
+  <script src="preview-runner.js"></script>
+</body>
+</html>

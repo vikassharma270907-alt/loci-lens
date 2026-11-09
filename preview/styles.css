@@ -1,0 +1,233 @@
+/* Loci Lens - SPECS Optical Preview Simulator Stylesheet */
+
+:root {
+  --bg-space: #07090e;
+  --bg-card: rgba(18, 22, 32, 0.88);
+  --border-cyan: #38bdf8;
+  --text-primary: #f8fafc;
+  --text-secondary: #94a3b8;
+  --accent-emerald: #22c55e;
+  --accent-amber: #f59e0b;
+  --accent-purple: #a855f7;
+  --specs-fov-mask: rgba(0, 0, 0, 0.65);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-space);
+  color: var(--text-primary);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  display: flex;
+}
+
+#viewport-container {
+  position: relative;
+  flex: 1;
+  height: 100vh;
+  background: radial-gradient(circle at center, #111827 0%, #030712 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+canvas#renderCanvas {
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* Simulated SPECS Waveguide Display Mask (37° V x 32° H) */
+.specs-waveguide-frame {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 580px;
+  height: 670px;
+  border: 2px dashed rgba(56, 189, 248, 0.35);
+  border-radius: 40px;
+  pointer-events: none;
+  box-shadow: 0 0 0 9999px rgba(3, 7, 18, 0.82), 0 0 30px rgba(56, 189, 248, 0.15) inset;
+}
+
+.specs-badge {
+  position: absolute;
+  top: 14px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 11px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--border-cyan);
+  background: rgba(15, 23, 42, 0.9);
+  padding: 4px 14px;
+  border-radius: 12px;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+/* Peripheral HUD (Lower Right margin, Lu et al. 2020) */
+.peripheral-hud {
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
+  width: 130px;
+  height: 130px;
+  background: var(--bg-card);
+  border: 1.5px solid rgba(56, 189, 248, 0.6);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 15px rgba(56, 189, 248, 0.2);
+  pointer-events: auto;
+  transition: opacity 0.3s ease;
+}
+
+.peripheral-hud.dimmed {
+  opacity: 0.35;
+}
+
+.hud-ring-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-secondary);
+}
+
+.hud-ring-val {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--border-cyan);
+}
+
+.hud-ring-sub {
+  font-size: 9px;
+  color: var(--text-secondary);
+}
+
+/* Directional Chevron for Out-of-View Cues */
+.out-of-view-chevron {
+  position: absolute;
+  width: 32px;
+  height: 32px;
+  color: var(--border-cyan);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: bold;
+  animation: pulse 1s infinite alternate;
+  pointer-events: none;
+}
+
+@keyframes pulse {
+  0% { transform: scale(0.9); opacity: 0.6; }
+  100% { transform: scale(1.15); opacity: 1; }
+}
+
+/* Sidebar Diagnostic & Control Panel */
+#control-panel {
+  width: 380px;
+  height: 100vh;
+  background: #0b0f17;
+  border-left: 1px solid rgba(56, 189, 248, 0.2);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  padding: 20px;
+  z-index: 10;
+}
+
+h2 {
+  font-size: 18px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-section {
+  margin-bottom: 20px;
+  background: rgba(18, 22, 32, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  padding: 14px;
+}
+
+.panel-section h3 {
+  font-size: 13px;
+  color: var(--border-cyan);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 10px;
+}
+
+.mode-btn-group {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 8px;
+}
+
+button.mode-btn {
+  background: rgba(30, 41, 59, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  color: var(--text-primary);
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+button.mode-btn:hover {
+  border-color: var(--border-cyan);
+  background: rgba(56, 189, 248, 0.15);
+}
+
+button.mode-btn.active {
+  background: var(--border-cyan);
+  color: #030712;
+  font-weight: 600;
+  border-color: var(--border-cyan);
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  margin-bottom: 6px;
+  color: var(--text-secondary);
+}
+
+.stat-row span.val {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.instructions-card {
+  font-size: 11px;
+  line-height: 1.5;
+  color: var(--text-secondary);
+}
+
+.leaf-log {
+  background: #04060a;
+  border-radius: 6px;
+  padding: 10px;
+  font-family: "Courier New", Courier, monospace;
+  font-size: 11px;
+  color: #a7f3d0;
+  max-height: 160px;
+  overflow-y: auto;
+}

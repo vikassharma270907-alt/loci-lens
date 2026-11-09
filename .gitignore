@@ -1,0 +1,7 @@
+# Environment and agent cache
+.agents/
+node_modules/
+dist/
+.DS_Store
+Thumbs.db
+*.log
