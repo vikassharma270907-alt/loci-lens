@@ -8,7 +8,7 @@
  * - Kim et al. (SUI 2019): High-luminance additive colors (#FFFFFF, #00F0FF, #4ADE80, #FF4D4D).
  */
 
-import { TorqueEngine, FlangeSnapshot, BoltPositionCm } from "./SequenceEngine";
+import { TorqueEngine, FlangeSnapshot, BoltPositionCm, BoltState } from "./SequenceEngine";
 import { MemoryTrainer, TrainingExperienceMode } from "./MemoryTrainer";
 import { FocusController } from "./FocusController";
 
@@ -90,7 +90,7 @@ export class FlangeSceneController {
   }
 
   private initBoltsAndDock(): void {
-    TorqueEngine.BOLT_COORDS.forEach((pos, idx) => {
+    TorqueEngine.BOLT_COORDS.forEach((pos: BoltPositionCm, idx: number) => {
       this.boltTransforms.set(idx + 1, {
         positionCm: { ...pos },
         scaleCm: { x: 4.5, y: 3.0, z: 4.5 },
@@ -153,7 +153,7 @@ export class FlangeSceneController {
     }
 
     // Update individual bolt node colors
-    snap.bolts.forEach((b) => {
+    snap.bolts.forEach((b: BoltState) => {
       const transform = this.boltTransforms.get(b.id);
       if (transform) {
         if (b.id === snap.warpedBoltId) {

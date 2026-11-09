@@ -1,31 +1,41 @@
-# Loci Lens — Implementation Tasks & Engineering Checklist
+# TorqueLock AR — Implementation Tasks & Engineering Checklist
 
-## Phase 0: Setup, Planning & Environment Validation
-- [x] **Task 0.1**: Inspect development environment, verify Node.js (v24), Git, and directory structure.
-- [x] **Task 0.2**: Install and inspect Devpost Learn SPECS skill pack (`challengepost/learn-specs`).
-- [x] **Task 0.3**: Generate formal planning authority at `devpost/design-brief.md` adhering strictly to template.
-- [x] **Task 0.4**: Configure `.mcp.json` and Lens Studio project definitions.
+## Phase 0: Planning & Requirements Integration
+- [x] **Task 0.1**: Ingest `TORQUELOCK_AR_INTEGRATED_MASTER_HANDOFF.md` completely, establishing authoritative requirements superseding prior Loci Lens instructions.
+- [x] **Task 0.2**: Verify official Devpost Learn SPECS skill pack (`challengepost/learn-specs`) and maintain approved `devpost/design-brief.md`.
+- [x] **Task 0.3**: Enforce technical boundaries: no real torque measurements or unverified gasket physics; reference ASME PCC-1 strictly for educational star-sequence training; display honest preview stand-in disclaimers.
 
-## Phase 1: Core Architecture & Data Engine
-- [x] **Task 1.1**: Implement `DeckData.ts` with 6-card multi-disciplinary memory curriculum.
-- [x] **Task 1.2**: Implement `ReviewStore.ts` with Leitner 3-box spaced repetition scoring and statistics.
-- [x] **Task 1.3**: Implement `LocusAnchor.ts` handling world spatial coordinates and raycast placement fallbacks.
-- [x] **Task 1.4**: Implement `LociManager.ts` master state machine (Onboard → Place → Stroll → Test → Summary).
-- [x] **Task 1.5**: Implement `CardObject.ts` for 3D billboard rendering, additive contrast, and flip-to-reveal mechanics.
-- [x] **Task 1.6**: Implement `PeripheralHUD.ts` adhering to Lu et al. (2020) glanceable peripheral guidelines.
-- [x] **Task 1.7**: Implement `InputLayer.ts` mapping SIK pinch, hover states, and mouse preview emulation.
-- [x] **Task 1.8**: Implement `AudioFx.ts` with spatial audio frequency synthesizers for placement and directional alerts.
+## Phase 1: Pure TypeScript Domain Engine (`Assets/Scripts/`)
+- [x] **Task 1.1**: Implement `SequenceEngine.ts` with pure TypeScript finite state machine, ASME PCC-1 star sequence ($1 \rightarrow 4 \rightarrow 2 \rightarrow 5 \rightarrow 3 \rightarrow 6$), three-pass torque ramp ($35, 70, 100\text{ Nm}$), and $1.8\text{ mm}$ gasket-warp deflection detection ($K_{\text{warp}} = 0.0514\text{ mm/Nm}$) with zero scene dependencies.
+- [x] **Task 1.2**: Implement `MemoryTrainer.ts` encoding the 6 bolt loci with distinct spatial mnemonic cues for Learn, Recall, and Summary modes.
+- [x] **Task 1.3**: Implement `FocusController.ts` cognitive Level-of-Detail (LOD) manager based on Henderson & Feiner (2011) and Lindlbauer et al. (2019), dynamically collapsing 2-line tags into 1-line eyes-up status pills during tool operation.
+- [x] **Task 1.4**: Implement `ReviewStore.ts` with Leitner 3-box spaced repetition scoring and remediation tracking.
 
-## Phase 2: Interactive Testing & Verification Framework
-- [x] **Task 2.1**: Implement automated Node.js test suite (`tests/loci-lens.test.cjs`) covering all state transitions, Leitner promotions/demotions, and edge cases.
-- [x] **Task 2.2**: Implement `LEAFTests.ts` defining Lens Experience Automated Framework test cases.
-- [x] **Task 2.3**: Build interactive Web/Canvas SPECS preview simulator (`preview/index.html`, `preview/preview-runner.js`, `preview/styles.css`) faithfully modeling the 37°×32° optical FOV, camera look, WASD room exploration, and click-to-pinch input.
-- [x] **Task 2.4**: Run automated test suite to achieve 100% test pass rate.
+## Phase 2: Scene & Interaction Controllers
+- [x] **Task 2.1**: Implement `FlangeSceneController.ts` generating 1:1 scale flange mesh ($42 \times 8 \times 42\text{ cm}$) at $(0, -18, -115)\text{ cm}$, six hex bolt nodes at exact centimeter coordinates, gasket crush plane, and $9\text{ cm}$ OD active target ring.
+- [x] **Task 2.2**: Implement `SIKInteractionController.ts` with Spectacles Interaction Kit (SIK) pinch gesture routing, 3D bolt picking, and lower-field UI Kit buttons at $(0, -28, -105)\text{ cm}$ to prevent arm fatigue.
+- [x] **Task 2.3**: Implement `PreviewSimulationController.ts` providing transparent simulated BLE torque wrench telemetry and disclaimer overlays.
 
-## Phase 3: Documentation, Video Walkthrough & Submission Kit
-- [x] **Task 3.1**: Create `docs/TEST_REPORT.md` documenting comprehensive test results and LEAF scenarios.
-- [x] **Task 3.2**: Create `docs/KNOWN_LIMITATIONS.md` distinguishing preview simulation from physical hardware.
-- [x] **Task 3.3**: Create `docs/DEMO_INSTRUCTIONS.md` with second-by-second 3-minute video recording script.
-- [x] **Task 3.4**: Create `RESEARCH_EVIDENCE.md` and `SOURCE_NOTES.md` documenting cognitive science citations.
-- [x] **Task 3.5**: Create companion agent prompts: `CLAD_EXECUTION_PROMPT.md`, `TEST_AND_DEBUG_PROMPT.md`, and `DEMO_AND_SUBMISSION_PROMPT.md`.
-- [x] **Task 3.6**: Complete `HANDOFF_CHECKLIST.md` verifying all Devpost requirements.
+## Phase 3: Automated Testing & Verification Framework
+- [x] **Task 3.1**: Implement automated LEAF scenarios C1 through C6 in `Assets/Tests/TorqueLockScenarios.ts` and `Scripts/LEAFTests.ts`.
+- [x] **Task 3.2**: Implement comprehensive Node.js unit test suite in `tests/torquelock.test.cjs`.
+- [x] **Task 3.3**: Run automated test suite to achieve **100% test pass rate (20 / 20 tests passing in <100ms)**.
+- [x] **Task 3.4**: Generate formal verification report in `docs/TEST_REPORT.md` and safety boundaries in `docs/KNOWN_LIMITATIONS.md`.
+
+## Phase 4: Interactive Optical Preview Simulator
+- [x] **Task 4.1**: Build standalone perspective Canvas simulator in `preview/index.html`, `preview/preview-runner.js`, and `preview/styles.css`.
+- [x] **Task 4.2**: Model the Snap SPECS 27 optical display cone ($37^\circ\text{ V} \times 32^\circ\text{ H}$), focal plane at $1.15\text{ m}$, 3D flange wireframe, and 6 hex bolts.
+- [x] **Task 4.3**: Integrate Web Audio synthesizer with spatial sound effects (ratchet clicks, torque chimes, gasket warp alarm buzzer, Leitner fanfare).
+- [x] **Task 4.4**: Implement live in-browser automated LEAF scenario runner and Focus Mode toggle.
+- [x] **Task 4.5**: Add preview HTTP server script to `package.json` (`npm run preview` -> `http://localhost:8080/`).
+
+## Phase 5: Media Production & Devpost Submission Kit
+- [x] **Task 5.1**: Synthesize professional narration audio clips using PowerShell Speech Synthesis (`generate_torquelock_audio.ps1`).
+- [x] **Task 5.2**: Mix voiceovers and spatial audio sound effects with exact timeline metadata (`inspect_and_mix_torquelock_audio.py`).
+- [x] **Task 5.3**: Render full 1080p 24fps walkthrough video (`torquelock_ar_demo_walkthrough.mp4`) in **2 minutes 22 seconds** (< 3 minutes hackathon limit).
+- [x] **Task 5.4**: Generate synchronized video captions in SRT (`torquelock_demo_captions.srt`) and WebVTT (`torquelock_demo_captions.vtt`).
+- [x] **Task 5.5**: Generate high-resolution 1280x720 YouTube thumbnail (`torquelock_ar_youtube_thumbnail.png`).
+- [x] **Task 5.6**: Author complete, copy-paste ready Devpost submission text in `devpost/submission.md`.
+- [x] **Task 5.7**: Author video description, tags, and pitch instructions in `DEMO_AND_SUBMISSION_PROMPT.md`.
+- [x] **Task 5.8**: Update `RESEARCH_EVIDENCE.md` and `SOURCE_NOTES.md` documenting all 14 academic citations and ASME PCC-1 / OSHA standards.
+- [x] **Task 5.9**: Verify all repository links and complete `HANDOFF_CHECKLIST.md`.

@@ -6,5 +6,5 @@ Thumbs.db
 
 .vercel
 .env*
-temp_audio/*.wav
+temp_audio/
 .agents/

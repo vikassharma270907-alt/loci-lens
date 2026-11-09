@@ -1,0 +1,64 @@
+WEBVTT - TorqueLock AR Demo Walkthrough Captions
+
+00:00.500 --> 00:06.800
+In industrial piping, improper bolt tightening causes catastrophic gasket blowout and plant downtime.
+
+00:07.000 --> 00:12.600
+Technicians must memorize the cross-pattern star sequence required by ASME PCC-1.
+
+00:12.800 --> 00:17.500
+But circular flanges lack visual landmarks, causing workers to lose their place.
+
+00:17.700 --> 00:23.100
+Welcome to TorqueLock AR on Snap SPECS. TorqueLock transforms the physical six-bolt flange itself into a spatial memory palace.
+
+00:24.300 --> 00:30.200
+Planned with the Devpost Learn skill pack, TorqueLock AR grounds every design decision in cognitive science.
+
+00:30.400 --> 00:37.200
+Based on Krokos et al. and Moll and Sykes on virtual memory palaces, the six physical bolt positions serve as real-world loci.
+
+00:37.400 --> 00:46.000
+Following Henderson and Feiner and Lindlbauer, our cognitive Focus Mode dynamically collapses floating specification tags into minimal eyes-up status indicators during tool engagement.
+
+00:47.200 --> 00:54.800
+In Learn mode, technicians encode the star sequence: Bolt 1 at top dead center, followed by its polar opposite Bolt 4.
+
+00:55.000 --> 01:00.000
+Shifting to Bolt 2, across to Bolt 5, then Bolt 3, and closing on Bolt 6.
+
+01:00.200 --> 01:07.100
+High-luminance cyan guidance rings and spatial beacons direct visual attention without optical washout, anchoring an intuitive procedural cue directly to each fastener.
+
+01:08.600 --> 01:13.200
+Next, Recall mode removes the visual crutches. Guidance lines disappear, challenging spatial recall.
+
+01:13.400 --> 01:18.500
+The technician pinches the active bolt to confirm their procedural choice.
+
+01:18.700 --> 01:24.400
+Immediate spatial feedback validates correct retrieval, reinforcing memory pathways before live wrenching.
+
+01:25.900 --> 01:33.500
+In Practise mode, technicians execute the full ASME PCC-1 multi-pass torque ramp: Pass 1 at 35 Newton-meters, Pass 2 at 70, and Pass 3 at 100.
+
+01:33.700 --> 01:40.200
+Focus Mode streamlines the display: Pass 1, Bolt 1, 35 Newton-meters.
+
+01:40.400 --> 01:50.650
+If a technician tightens in an improper circle, our engine detects asymmetric stress, flashing an alert for 1.8 millimeters of gasket warp before catastrophic leakage occurs.
+
+01:52.150 --> 01:58.000
+Upon completion, the Summary dashboard displays tightening accuracy, sequence efficiency, and Leitner three-box spaced repetition tracking.
+
+01:58.200 --> 02:05.080
+Any missed bolts are routed into Box 1 for targeted re-training, ensuring mastery before field deployment.
+
+02:06.300 --> 02:13.000
+TorqueLock AR is built on a decoupled TypeScript state machine verified with twenty passing automated LEAF scenarios.
+
+02:13.200 --> 02:17.500
+Transparent disclaimers clarify this is an educational simulation.
+
+02:17.700 --> 02:22.000
+TorqueLock AR: transforming industrial maintenance through spatial memory and intelligent augmented reality.

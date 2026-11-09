@@ -8,19 +8,22 @@
 class AudioSynthesizer {
   constructor() {
     this.ctx = null;
+    this.muted = false;
   }
 
   ensureContext() {
+    if (this.muted) return;
     if (!this.ctx) {
       const AudioContext = window.AudioContext || window.webkitAudioContext;
       if (AudioContext) this.ctx = new AudioContext();
     }
     if (this.ctx && this.ctx.state === "suspended") {
-      this.ctx.resume();
+      this.ctx.resume().catch(() => {});
     }
   }
 
   playTone(freq, durMs, type = "sine", gainVal = 0.12) {
+    if (this.muted) return;
     try {
       this.ensureContext();
       if (!this.ctx) return;
@@ -134,6 +137,7 @@ const ctx = canvas.getContext("2d");
 
 function resizeCanvas() {
   const container = document.getElementById("viewport-container");
+  if (!container) return;
   canvas.width = container.clientWidth;
   canvas.height = container.clientHeight;
 }
@@ -147,7 +151,7 @@ function drawScene() {
 
   // 1. Draw Simulated Workbench Grid in lower field (y = -18 cm)
   ctx.save();
-  ctx.strokeStyle = "rgba(100, 116, 139, 0.18)";
+  ctx.strokeStyle = "rgba(100, 116, 139, 0.16)";
   ctx.lineWidth = 1;
   for (let gx = -40; gx <= 40; gx += 10) {
     const p1 = project3D(gx, -18, -80, w, h);
@@ -177,18 +181,18 @@ function drawScene() {
     ctx.save();
     ctx.beginPath();
     ctx.arc(flangeCenter.screenX, flangeCenter.screenY, 21 * flangeCenter.scale, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(176, 196, 222, 0.22)"; // Brushed light silver-blue
+    ctx.fillStyle = "rgba(148, 163, 184, 0.16)"; // Brushed metallic steel
     ctx.fill();
-    ctx.strokeStyle = "rgba(176, 196, 222, 0.65)";
+    ctx.strokeStyle = "rgba(148, 163, 184, 0.55)";
     ctx.lineWidth = 2.5;
     ctx.stroke();
 
     // Flange inner bore (radius 9 cm)
     ctx.beginPath();
     ctx.arc(flangeCenter.screenX, flangeCenter.screenY, 9 * flangeCenter.scale, 0, Math.PI * 2);
-    ctx.fillStyle = "rgba(7, 9, 14, 0.85)";
+    ctx.fillStyle = "rgba(5, 6, 8, 0.92)";
     ctx.fill();
-    ctx.strokeStyle = "rgba(100, 116, 139, 0.4)";
+    ctx.strokeStyle = "rgba(71, 85, 105, 0.5)";
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
@@ -197,7 +201,7 @@ function drawScene() {
     if (gasketCenter) {
       ctx.beginPath();
       ctx.arc(gasketCenter.screenX, gasketCenter.screenY, 17 * gasketCenter.scale, 0, Math.PI * 2);
-      ctx.strokeStyle = state.warpedBoltId !== null ? "#FF4D4D" : (state.isSealed ? "#00F0FF" : "#4ADE80");
+      ctx.strokeStyle = state.warpedBoltId !== null ? "#EF4444" : (state.isSealed ? "#00F0FF" : "#10B981");
       ctx.lineWidth = 3;
       ctx.stroke();
     }
@@ -237,10 +241,10 @@ function drawScene() {
     const isDone = boltState.passCompleted >= state.passIndex;
 
     // Color determination
-    let color = "#8899AA"; // Unvisited muted silver-blue
-    if (isWarped) color = "#FF4D4D"; // Error coral red
+    let color = "#94a3b8"; // Unvisited muted silver-slate
+    if (isWarped) color = "#EF4444"; // Error coral red
     else if (isCurrentActive) color = "#00F0FF"; // Active cyan
-    else if (isDone) color = "#4ADE80"; // Done pass mint green
+    else if (isDone) color = "#10B981"; // Done pass mint emerald
 
     const radius = 2.4 * proj.scale;
 
@@ -249,7 +253,7 @@ function drawScene() {
       ctx.save();
       ctx.beginPath();
       ctx.arc(proj.screenX, proj.screenY, radius * 1.8, 0, Math.PI * 2);
-      ctx.fillStyle = isWarped ? "rgba(255, 77, 77, 0.25)" : "rgba(0, 240, 255, 0.22)";
+      ctx.fillStyle = isWarped ? "rgba(239, 68, 68, 0.3)" : "rgba(0, 240, 255, 0.25)";
       ctx.fill();
       ctx.restore();
     }
@@ -265,7 +269,7 @@ function drawScene() {
       else ctx.lineTo(hx, hy);
     }
     ctx.closePath();
-    ctx.fillStyle = "rgba(15, 23, 42, 0.9)";
+    ctx.fillStyle = "rgba(10, 13, 20, 0.95)";
     ctx.fill();
     ctx.strokeStyle = color;
     ctx.lineWidth = isCurrentActive ? 3 : 1.8;
@@ -293,7 +297,7 @@ function drawScene() {
       ctx.strokeStyle = "#00F0FF";
       ctx.lineWidth = 2.5;
       ctx.shadowColor = "#00F0FF";
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 14;
       ctx.stroke();
       ctx.restore();
 
@@ -345,12 +349,15 @@ requestAnimationFrame(drawScene);
 function updateTelemetryUI() {
   const hudVal = document.getElementById("hud-val");
   const hudSub = document.getElementById("hud-sub");
+  const ringCircle = document.getElementById("hud-ring-circle");
   const statMode = document.getElementById("stat-mode");
   const statTarget = document.getElementById("stat-target");
   const statPass = document.getElementById("stat-pass");
   const statLod = document.getElementById("stat-lod");
   const statWarp = document.getElementById("stat-warp");
   const statAcc = document.getElementById("stat-acc");
+  const deflBar = document.getElementById("deflection-bar");
+  const passBadge = document.getElementById("star-flow-pass-badge");
 
   const activeBoltId = STAR_SEQUENCE[state.starCursor];
   const targetNm = PASS_TARGETS_NM[state.passIndex - 1];
@@ -358,6 +365,22 @@ function updateTelemetryUI() {
 
   if (hudVal) hudVal.textContent = `${state.starCursor + 1}/6`;
   if (hudSub) hudSub.textContent = `Pass ${state.passIndex} (${targetNm} Nm)`;
+
+  // Update SVG circular progress ring
+  if (ringCircle) {
+    const totalCirc = 2 * Math.PI * 52; // ~326.7
+    const progress = (state.starCursor + 1) / 6;
+    const offset = totalCirc * (1 - progress);
+    ringCircle.style.strokeDasharray = `${totalCirc}`;
+    ringCircle.style.strokeDashoffset = `${offset}`;
+    if (state.warpedBoltId !== null) {
+      ringCircle.style.stroke = "#EF4444";
+    } else if (state.isSealed) {
+      ringCircle.style.stroke = "#10B981";
+    } else {
+      ringCircle.style.stroke = "#00F0FF";
+    }
+  }
 
   if (statMode) statMode.textContent = state.mode;
   if (statTarget) statTarget.textContent = `Bolt ${activeBoltId} (${BOLT_COORDS[activeBoltId - 1].oClock})`;
@@ -367,16 +390,48 @@ function updateTelemetryUI() {
   if (statWarp) {
     if (state.warpedBoltId !== null) {
       statWarp.textContent = `+1.8 mm (WARP ALERT Bolt ${state.warpedBoltId})`;
-      statWarp.style.color = "#FF4D4D";
+      statWarp.style.color = "#EF4444";
     } else {
       statWarp.textContent = "0.0 mm (Nominal Uniform)";
-      statWarp.style.color = "#4ADE80";
+      statWarp.style.color = "#10B981";
+    }
+  }
+
+  if (deflBar) {
+    if (state.warpedBoltId !== null) {
+      deflBar.style.width = "100%";
+      deflBar.classList.add("warning");
+    } else {
+      deflBar.style.width = "0%";
+      deflBar.classList.remove("warning");
     }
   }
 
   const totalRecall = state.recallCorrect + state.recallMissed;
   const acc = totalRecall > 0 ? Math.round((state.recallCorrect / totalRecall) * 100) : 100;
   if (statAcc) statAcc.textContent = `${acc}% (${state.recallCorrect}/${totalRecall || 6})`;
+
+  // Update Star Sequence Flow Pipeline
+  if (passBadge) {
+    passBadge.textContent = state.isSealed ? "FLANGE 100% SEALED" : `PASS ${state.passIndex} · ${passLabel}`;
+    passBadge.style.color = state.isSealed ? "#10B981" : "#00F0FF";
+  }
+
+  STAR_SEQUENCE.forEach((boltId) => {
+    const nodeEl = document.getElementById(`node-bolt-${boltId}`);
+    if (!nodeEl) return;
+    const boltIdx = boltId - 1;
+    const boltState = state.bolts[boltIdx];
+    nodeEl.classList.remove("active", "completed", "warped");
+
+    if (boltId === state.warpedBoltId) {
+      nodeEl.classList.add("warped");
+    } else if (boltId === activeBoltId && !state.isSealed) {
+      nodeEl.classList.add("active");
+    } else if (boltState.passCompleted >= state.passIndex) {
+      nodeEl.classList.add("completed");
+    }
+  });
 
   // Update Mnemonic Card content
   const activeCue = BOLT_COORDS[activeBoltId - 1];
@@ -405,6 +460,15 @@ window.setMode = function(modeName) {
   const activeBtn = document.getElementById(`btn-mode-${modeName.toLowerCase()}`);
   if (activeBtn) activeBtn.classList.add("active");
   audio.playChime(true);
+};
+
+window.toggleAudio = function() {
+  audio.muted = !audio.muted;
+  const btn = document.getElementById("audio-toggle-btn");
+  const label = document.getElementById("audio-btn-label");
+  if (btn) btn.classList.toggle("muted", audio.muted);
+  if (label) label.textContent = audio.muted ? "SFX MUTED" : "SFX ON";
+  if (!audio.muted) audio.playTone(880, 80, "sine");
 };
 
 window.triggerApplyTorque = function() {
@@ -520,13 +584,15 @@ let lastMouseX = 0;
 let lastMouseY = 0;
 
 canvas.addEventListener("mousedown", (e) => {
-  if (e.button === 2 || e.shiftKey) {
+  if (e.button === 2 || e.shiftKey || e.button === 0) {
     isDragging = true;
     lastMouseX = e.clientX;
     lastMouseY = e.clientY;
   }
 });
+
 window.addEventListener("mouseup", () => { isDragging = false; });
+
 window.addEventListener("mousemove", (e) => {
   if (isDragging) {
     const dx = e.clientX - lastMouseX;
@@ -537,10 +603,21 @@ window.addEventListener("mousemove", (e) => {
     lastMouseY = e.clientY;
   }
 });
+
+canvas.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  state.cam.z = Math.max(-50, Math.min(50, state.cam.z + e.deltaY * 0.05));
+}, { passive: false });
+
 canvas.addEventListener("contextmenu", (e) => e.preventDefault());
 
-// WASD Keyboard Camera Movement
+// Keyboard Shortcuts & Navigation
 window.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && (e.target === document.body || e.target === canvas)) {
+    e.preventDefault();
+    window.triggerApplyTorque();
+    return;
+  }
   const speed = 2.0;
   if (e.key === "w" || e.key === "W") state.cam.z -= speed;
   if (e.key === "s" || e.key === "S") state.cam.z += speed;
@@ -548,6 +625,10 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "d" || e.key === "D") state.cam.x += speed;
   if (e.key === "q" || e.key === "Q") state.cam.y -= speed;
   if (e.key === "e" || e.key === "E") state.cam.y += speed;
+  if (e.key === "x" || e.key === "X") window.triggerSimError();
+  if (e.key === "f" || e.key === "F") window.triggerFocusMode();
+  if (e.key === "r" || e.key === "R") window.triggerReset();
+  if (e.key === "m" || e.key === "M") window.toggleAudio();
   if (e.key === "1") window.setMode("LEARN");
   if (e.key === "2") window.setMode("RECALL");
   if (e.key === "3") window.setMode("PRACTISE");
@@ -557,7 +638,13 @@ window.addEventListener("keydown", (e) => {
 // --- Automated LEAF Test Harness Runner ---
 window.runLeafHarness = async function() {
   const logEl = document.getElementById("leaf-log");
-  logEl.textContent = "Running 6 Automated LEAF Scenarios...\n";
+  const runBtn = document.getElementById("run-leaf-btn");
+  if (runBtn) {
+    runBtn.disabled = true;
+    runBtn.textContent = "Running LEAF...";
+  }
+
+  logEl.textContent = "Running 6 Automated LEAF Scenarios (ASME PCC-1 & SPECS 27)...\n";
 
   function log(msg) {
     logEl.textContent += msg + "\n";
@@ -643,5 +730,10 @@ window.runLeafHarness = async function() {
   } catch (err) {
     log(`\n❌ LEAF SCENARIO FAILED: ${err.message}`);
     audio.playWarpAlarm();
+  } finally {
+    if (runBtn) {
+      runBtn.disabled = false;
+      runBtn.textContent = "Run LEAF Suite";
+    }
   }
 };

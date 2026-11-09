@@ -5,26 +5,44 @@
     {
       "source": "/preview",
       "destination": "/",
-      "permanent": true
-    },
-    {
-      "source": "/preview/:path*",
-      "destination": "/:path*",
-      "permanent": true
+      "permanent": false
     }
   ],
   "rewrites": [
     {
-      "source": "/preview",
-      "destination": "/index.html"
+      "source": "/preview/(.*)",
+      "destination": "/$1"
     },
     {
-      "source": "/preview/index.html",
-      "destination": "/index.html"
+      "source": "/styles.css",
+      "destination": "/styles.css"
     },
     {
-      "source": "/preview/:path*",
-      "destination": "/:path*"
+      "source": "/preview-runner.js",
+      "destination": "/preview-runner.js"
+    },
+    {
+      "source": "/",
+      "destination": "/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "X-Frame-Options",
+          "value": "SAMEORIGIN"
+        },
+        {
+          "key": "X-XSS-Protection",
+          "value": "1; mode=block"
+        }
+      ]
     }
   ]
 }

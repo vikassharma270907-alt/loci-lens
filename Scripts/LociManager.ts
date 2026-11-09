@@ -4,7 +4,7 @@
  */
 
 import { DEMO_DECK, LearningCard } from "./DeckData";
-import { ReviewStore, ReviewStats } from "./ReviewStore";
+import { LociReviewStore, ReviewStats } from "./LociReviewStore";
 import { CardObject } from "./CardObject";
 import { PeripheralHUD } from "./PeripheralHUD";
 import { AudioFx } from "./AudioFx";
@@ -17,7 +17,7 @@ export class LociManager {
   public mode: LensMode = "onboard";
   public cards: LearningCard[];
   public cardObjects: CardObject[] = [];
-  public reviewStore: ReviewStore;
+  public reviewStore: LociReviewStore;
   public hud: PeripheralHUD;
   public audio: AudioFx;
   public input: InputLayer;
@@ -35,7 +35,7 @@ export class LociManager {
 
   constructor(cards: LearningCard[] = DEMO_DECK) {
     this.cards = [...cards];
-    this.reviewStore = new ReviewStore(this.cards);
+    this.reviewStore = new LociReviewStore(this.cards);
     this.hud = new PeripheralHUD(this.cards.length);
     this.audio = new AudioFx();
     this.input = new InputLayer();

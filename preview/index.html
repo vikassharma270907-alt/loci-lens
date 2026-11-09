@@ -3,19 +3,28 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TorqueLock AR — Snap SPECS 27 Interactive Optical Preview Simulator</title>
-  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+  <title>TorqueLock AR — Snap SPECS 27 Interactive Optical Waveguide Simulator</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+  <!-- 3D Spatial Viewport Container -->
   <div id="viewport-container">
     <canvas id="renderCanvas"></canvas>
 
     <!-- Simulated SPECS Optical Waveguide Display Frame (37° V x 32° H) -->
     <div class="specs-waveguide-frame">
-      <div class="specs-badge">Snap SPECS 27 Waveguide FOV (37° V × 32° H)</div>
+      <div class="waveguide-corner-tr"></div>
+      <div class="waveguide-corner-bl"></div>
+      <div class="optical-crosshair"></div>
+
+      <div class="specs-badge">
+        <span class="live-beacon"></span>
+        Snap SPECS 27 Waveguide (37° V × 32° H)
+      </div>
       <div class="disclaimer-banner">PREVIEW STAND-IN: SIMULATED BLE TORQUE WRENCH</div>
-      <div class="safety-banner">SIMULATION MODE — NO REAL TORQUE MEASUREMENT</div>
+      <div class="safety-banner">
+        <span>⚠️</span> SIMULATION MODE — NO REAL TORQUE MEASUREMENT
+      </div>
     </div>
 
     <!-- Out-of-Sequence Gasket Warp Banner (Gruenefeld et al. SUI 2017) -->
@@ -35,6 +44,10 @@
 
     <!-- Peripheral HUD (Lower Right Margin, Lu et al. 2020) -->
     <div class="peripheral-hud" id="peripheral-hud">
+      <svg class="hud-ring-svg" viewBox="0 0 120 120">
+        <circle class="hud-ring-bg" cx="60" cy="60" r="52"></circle>
+        <circle class="hud-ring-progress" id="hud-ring-circle" cx="60" cy="60" r="52"></circle>
+      </svg>
       <div class="hud-ring-label">Star Step</div>
       <div class="hud-ring-val" id="hud-val">1/6</div>
       <div class="hud-ring-sub" id="hud-sub">Pass 1 (35 Nm)</div>
@@ -43,96 +56,190 @@
 
   <!-- Sidebar Diagnostic, State Controller & LEAF Runner -->
   <div id="control-panel">
-    <h2>
-      <span style="color:#00F0FF;">⚙️</span> TorqueLock AR
-    </h2>
-    <p style="font-size:12px; color:#94a3b8; margin-bottom:14px;">
-      Spatial Memory & Procedural Flange Torquing Coach
-    </p>
+    <!-- Header Deck -->
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <h2>
+          <span class="gear-icon">⚙️</span> TorqueLock AR
+        </h2>
+        <button id="audio-toggle-btn" class="audio-toggle-btn" onclick="window.toggleAudio()" title="Toggle Spatial Audio (M)">
+          <div class="eq-bars">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+          </div>
+          <span id="audio-btn-label">SFX ON</span>
+        </button>
+      </div>
+      <p class="panel-sub">
+        Spatial Memory & Procedural Flange Torquing Coach
+      </p>
+      <div style="display:flex; justify-content:space-between; align-items:center;">
+        <span class="specs-connection-pill">
+          <span class="live-beacon"></span>
+          SPECS Optical Link Live
+        </span>
+        <span style="font-size:10px; color:#64748b; font-family:monospace;">ASME PCC-1 STAR PATTERN</span>
+      </div>
+    </div>
 
     <!-- Mode Switcher -->
     <div class="panel-section">
-      <h3>Experience Mode (Method of Loci)</h3>
+      <h3>
+        <span>Experience Mode (Method of Loci)</span>
+        <span style="font-size:9px; color:#64748b;">KEYS [1–4]</span>
+      </h3>
       <div class="mode-btn-group">
-        <button class="mode-btn active" id="btn-mode-learn" onclick="window.setMode('LEARN')">1. Learn</button>
-        <button class="mode-btn" id="btn-mode-recall" onclick="window.setMode('RECALL')">2. Recall</button>
-        <button class="mode-btn" id="btn-mode-practise" onclick="window.setMode('PRACTISE')">3. Practise</button>
-        <button class="mode-btn" id="btn-mode-summary" onclick="window.setMode('SUMMARY')">4. Summary</button>
+        <button class="mode-btn active" id="btn-mode-learn" onclick="window.setMode('LEARN')">
+          <span>1. Learn</span>
+          <span class="key-badge">1</span>
+        </button>
+        <button class="mode-btn" id="btn-mode-recall" onclick="window.setMode('RECALL')">
+          <span>2. Recall</span>
+          <span class="key-badge">2</span>
+        </button>
+        <button class="mode-btn" id="btn-mode-practise" onclick="window.setMode('PRACTISE')">
+          <span>3. Practise</span>
+          <span class="key-badge">3</span>
+        </button>
+        <button class="mode-btn" id="btn-mode-summary" onclick="window.setMode('SUMMARY')">
+          <span>4. Summary</span>
+          <span class="key-badge">4</span>
+        </button>
       </div>
     </div>
 
     <!-- Current Step Instruction & Mnemonic Card -->
     <div class="panel-section" id="mnemonic-card-section">
-      <h3 id="mnemonic-title">Stage A: Spatial Mnemonic Association</h3>
-      <div style="font-size:13px; font-weight:700; color:#00F0FF; margin-bottom:4px;" id="cue-headline">
+      <span class="stage-badge" id="mnemonic-title">Stage A: Spatial Mnemonic Association</span>
+      <div id="cue-headline">
         Bolt 1: Initial Anchor (12 o'clock)
       </div>
-      <p style="font-size:12px; color:#e2e8f0; margin-bottom:6px;" id="cue-mnemonic">
+      <p id="cue-mnemonic">
         "Top Origin — Anchor the reference plane"
       </p>
-      <p style="font-size:11px; color:#94a3b8;" id="cue-instruction">
+      <p id="cue-instruction">
         Begin at the top 12 o'clock bolt. Tighten to initial snug target.
       </p>
     </div>
 
-    <!-- Live Telemetry -->
+    <!-- Interactive Star Sequence Visualizer Pipeline -->
+    <div class="panel-section">
+      <h3>
+        <span>Star Sequence Progress (ASME PCC-1)</span>
+        <span id="star-flow-pass-badge" style="font-size:9px; color:#00F0FF; font-weight:700;">PASS 1 · SNUG</span>
+      </h3>
+      <div class="star-flow-pipeline" id="star-pipeline">
+        <div class="star-node active" id="node-bolt-1" title="Bolt 1 (12 o'clock)">
+          <div class="star-node-chip">1</div>
+          <span class="star-node-sub">12h</span>
+        </div>
+        <span class="star-node-arrow">➜</span>
+        <div class="star-node" id="node-bolt-4" title="Bolt 4 (6 o'clock)">
+          <div class="star-node-chip">4</div>
+          <span class="star-node-sub">6h</span>
+        </div>
+        <span class="star-node-arrow">➜</span>
+        <div class="star-node" id="node-bolt-2" title="Bolt 2 (2 o'clock)">
+          <div class="star-node-chip">2</div>
+          <span class="star-node-sub">2h</span>
+        </div>
+        <span class="star-node-arrow">➜</span>
+        <div class="star-node" id="node-bolt-5" title="Bolt 5 (8 o'clock)">
+          <div class="star-node-chip">5</div>
+          <span class="star-node-sub">8h</span>
+        </div>
+        <span class="star-node-arrow">➜</span>
+        <div class="star-node" id="node-bolt-3" title="Bolt 3 (4 o'clock)">
+          <div class="star-node-chip">3</div>
+          <span class="star-node-sub">4h</span>
+        </div>
+        <span class="star-node-arrow">➜</span>
+        <div class="star-node" id="node-bolt-6" title="Bolt 6 (10 o'clock)">
+          <div class="star-node-chip">6</div>
+          <span class="star-node-sub">10h</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Live Telemetry Matrix -->
     <div class="panel-section">
       <h3>Live Mechanical & Spatial Telemetry</h3>
-      <div class="stat-row">
-        <span>Active Experience:</span>
-        <span class="val" id="stat-mode" style="color:#00F0FF;">LEARN</span>
-      </div>
-      <div class="stat-row">
-        <span>Active Star Target:</span>
-        <span class="val" id="stat-target">Bolt 1 (12 o'clock)</span>
-      </div>
-      <div class="stat-row">
-        <span>Training Pass:</span>
-        <span class="val" id="stat-pass">Pass 1 (35 Nm Snug)</span>
-      </div>
-      <div class="stat-row">
-        <span>Focus Mode (LOD):</span>
-        <span class="val" id="stat-lod">COMPREHENSION</span>
-      </div>
-      <div class="stat-row">
-        <span>Gasket Deflection:</span>
-        <span class="val" id="stat-warp" style="color:#4ADE80;">0.0 mm (Nominal)</span>
-      </div>
-      <div class="stat-row">
-        <span>Recall Accuracy:</span>
-        <span class="val" id="stat-acc">100% (6/6)</span>
+      <div class="telemetry-grid">
+        <div class="telemetry-item">
+          <span class="label">Experience Mode</span>
+          <span class="val" id="stat-mode" style="color:#00F0FF;">LEARN</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="label">Star Target</span>
+          <span class="val" id="stat-target">Bolt 1 (12 o'clock)</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="label">Tightening Pass</span>
+          <span class="val" id="stat-pass">Pass 1 (35 Nm Snug)</span>
+        </div>
+        <div class="telemetry-item">
+          <span class="label">Focus Mode (LOD)</span>
+          <span class="val" id="stat-lod">FULL COMPREHENSION</span>
+        </div>
+        <div class="telemetry-item" style="grid-column: span 2;">
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <span class="label">Recall Accuracy (Leitner)</span>
+            <span class="val" id="stat-acc" style="color:#FACC15;">100% (6/6)</span>
+          </div>
+        </div>
+        <div class="deflection-gauge-container">
+          <div class="deflection-gauge-header">
+            <span>Gasket Deflection Warp</span>
+            <span id="stat-warp" style="color:#10B981;">0.0 mm (Nominal)</span>
+          </div>
+          <div class="deflection-bar-track">
+            <div class="deflection-bar-fill" id="deflection-bar" style="width: 0%;"></div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- SIK Interaction Controls (Lower Dock Emulation) -->
     <div class="panel-section">
       <h3>Lower-Field Sim Dock (SIK Controls)</h3>
-      <div style="display:flex; flex-direction:column; gap:8px;">
-        <button class="mode-btn" style="background:#0284c7; border-color:#00F0FF; font-weight:700;" onclick="window.triggerApplyTorque()">
-          ⚡ Apply Torque (Advance Star Bolt)
+      <div class="action-btn-group">
+        <button class="btn-apply-torque" onclick="window.triggerApplyTorque()">
+          <span>⚡ Apply Torque (Advance Star Bolt)</span>
+          <kbd>Space</kbd>
         </button>
-        <div style="display:flex; gap:8px;">
-          <button class="mode-btn" style="flex:1; background:#b45309; border-color:#FACC15;" onclick="window.triggerSimError()">
-            ⚠️ Sim Wrong Bolt
+        <div class="secondary-btn-row">
+          <button class="btn-sim-error" onclick="window.triggerSimError()">
+            <span>⚠️ Sim Wrong Bolt</span>
+            <kbd>X</kbd>
           </button>
-          <button class="mode-btn" style="flex:1; background:#4338ca; border-color:#818cf8;" onclick="window.triggerFocusMode()">
-            👁️ Focus Mode
+          <button class="btn-focus-mode" onclick="window.triggerFocusMode()">
+            <span>👁️ Focus Mode</span>
+            <kbd>F</kbd>
           </button>
         </div>
-        <button class="mode-btn" style="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.2);" onclick="window.triggerReset()">
-          ↺ Reset / Recover
+        <button class="btn-reset" onclick="window.triggerReset()">
+          <span>↺ Reset / Recover Flange</span>
+          <kbd>R</kbd>
         </button>
       </div>
-      <p style="font-size:10px; color:#64748b; margin-top:8px;">
-        💡 You can also left-click any of the 6 hexagonal bolt nodes directly in 3D perspective to simulate physical SIK pinch selection!
+      <p style="font-size:10px; color:#64748b; margin-top:10px; line-height:1.4;">
+        💡 <strong>SIK Pinch:</strong> Left-click any of the 6 hexagonal bolt nodes in the 3D perspective to simulate physical hand tracking pinch selection!
       </p>
     </div>
 
     <!-- Automated LEAF Test Runner -->
     <div class="panel-section">
-      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h3 style="margin-bottom:0;">Automated LEAF Scenarios (C1–C6)</h3>
-        <button id="run-leaf-btn" style="background:#0284c7; color:#fff; border:none; padding:5px 10px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer;" onclick="window.runLeafHarness()">
+      <div class="leaf-terminal-header">
+        <div class="terminal-title-group">
+          <div class="terminal-dots">
+            <span class="terminal-dot"></span>
+            <span class="terminal-dot"></span>
+            <span class="terminal-dot"></span>
+          </div>
+          <h3 style="margin-bottom:0;">Automated LEAF Scenarios (C1–C6)</h3>
+        </div>
+        <button id="run-leaf-btn" onclick="window.runLeafHarness()">
           Run LEAF Suite
         </button>
       </div>
@@ -141,11 +248,33 @@
 
     <!-- Navigation & Hotkey Guide -->
     <div class="panel-section instructions-card">
-      <h3 style="color:#94a3b8;">Controls Guide</h3>
-      <p>• <strong>Left Click</strong> on 3D Bolt Node: SIK Pinch selection</p>
-      <p>• <strong>Right Drag</strong>: Orbit camera orientation</p>
-      <p>• <strong>WASD / QE</strong>: Move position in 3D centimeters</p>
-      <p>• <strong>1 / 2 / 3 / 4</strong>: Switch between Learn, Recall, Practise, Summary</p>
+      <h3 style="color:#94a3b8;">Controls & Gesture Guide</h3>
+      <div class="controls-grid">
+        <div class="control-item">
+          <kbd>Click</kbd>
+          <span>SIK Bolt Pinch</span>
+        </div>
+        <div class="control-item">
+          <kbd>Right Drag</kbd>
+          <span>Orbit Camera</span>
+        </div>
+        <div class="control-item">
+          <kbd>Scroll</kbd>
+          <span>Zoom In / Out</span>
+        </div>
+        <div class="control-item">
+          <kbd>W A S D</kbd>
+          <span>3D Pan (cm)</span>
+        </div>
+        <div class="control-item">
+          <kbd>Q / E</kbd>
+          <span>Elevation (Y)</span>
+        </div>
+        <div class="control-item">
+          <kbd>1 2 3 4</kbd>
+          <span>Switch Modes</span>
+        </div>
+      </div>
     </div>
   </div>
 
