@@ -1,62 +1,46 @@
-{
-  "appVersion": {
-    "major": 5,
-    "minor": 23,
-    "patch": 2,
-    "build": 0
-  },
-  "studioVersion": "5.23.2",
-  "targetPlatform": "Spectacles",
-  "projectType": "Lens",
-  "projectName": "CrossTorqueAR",
-  "metadata": {
-    "title": "CrossTorque AR",
-    "description": "1:1 Star-Pattern Fastener & Gasket Compression Coach for Snap SPECS",
-    "category": "Education & Spatial Training",
-    "author": "Devpost Learn SPECS Hackathon Team",
-    "version": "1.0.0"
-  },
-  "compatibility": {
-    "deviceTypes": [
-      "Spectacles"
-    ],
-    "supportsInteractivePreview": true,
-    "requiresWorldTracking": true,
-    "requiresHandTracking": true
-  },
-  "packages": [
-    {
-      "name": "Spectacles Interaction Kit",
-      "version": "1.4.0",
-      "enabled": true
-    },
-    {
-      "name": "Spectacles UI Kit",
-      "version": "1.2.0",
-      "enabled": true
-    },
-    {
-      "name": "LEAF",
-      "version": "2.0.2",
-      "enabled": true
-    }
-  ],
-  "settings": {
-    "additiveDisplaySimulation": true,
-    "fieldOfView": {
-      "verticalDeg": 37.0,
-      "horizontalDeg": 32.0
-    },
-    "defaultFocalPlaneDistanceCm": 110.0,
-    "camera": {
-      "deviceTracking": "World",
-      "farPlane": 100000.0,
-      "nearPlane": 10.0
-    },
-    "workbenchAnchoring": {
-      "x": 0.0,
-      "y": -8.0,
-      "z": -110.0
-    }
-  }
-}
+"appVersion":
+  "major": 5
+  "minor": 23
+  "patch": 2
+  "build": 0
+"studioVersion": "5.23.2"
+"targetPlatform": "Spectacles"
+"projectType": "Lens"
+"projectName": "CrossTorqueAR"
+"metadata":
+  "title": "CrossTorque AR"
+  "description": "1:1 Star-Pattern Fastener & Gasket Compression Coach for Snap SPECS"
+  "category": "Education & Spatial Training"
+  "author": "Devpost Learn SPECS Hackathon Team"
+  "version": "1.0.0"
+"compatibility":
+  "deviceTypes":
+    - "Spectacles"
+  "supportsInteractivePreview": true
+  "requiresWorldTracking": true
+  "requiresHandTracking": true
+"packages":
+  - "name": "Spectacles Interaction Kit"
+    "version": "1.4.0"
+    "enabled": true
+  - "name": "Spectacles UI Kit"
+    "version": "1.2.0"
+    "enabled": true
+  - "name": "LEAF"
+    "version": "2.0.2"
+    "enabled": true
+"settings":
+  "additiveDisplaySimulation": true
+  "fieldOfView":
+    "verticalDeg": 37.0
+    "horizontalDeg": 32.0
+  "defaultFocalPlaneDistanceCm": 110.0
+  "camera":
+    "deviceTracking": "World"
+    "farPlane": 100000.0
+    "nearPlane": 10.0
+  "workbenchAnchoring":
+    "x": 0.0
+    "y": -8.0
+    "z": -110.0
+updateCheckpoint: 102

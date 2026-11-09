@@ -1,0 +1,15 @@
+- !<Scene/2c4affd7-c00e-433c-9338-cc6ef3a0ab03>
+  PackagePath: ""
+  objects:
+    []
+  layers: !<Layers/cc133fe0-c00b-462d-93ce-e4b193afad2a>
+    userLayers:
+      []
+  RenderOutput: !<reference> 00000000-0000-0000-0000-000000000000
+  RenderPreviewOutput: !<reference> 00000000-0000-0000-0000-000000000000
+  RenderOverlayOutput: !<reference> 00000000-0000-0000-0000-000000000000
+  PhysicsRootWorldSettings: !<reference> 00000000-0000-0000-0000-000000000000
+  HiddenInCaptureLayers: 0
+  HiddenInDisplayLayers: 0
+  PrefabPreviewEnvironmentInitialized: false
+  PrefabPreviewEnvironment: !<reference> 00000000-0000-0000-0000-000000000000
