@@ -45,6 +45,33 @@ class TorqueAudio {
     } catch (_) {}
   }
 
+  playTorquePitchRamp(durMs = 280, startFreq = 440, endFreq = 880) {
+    if (this.muted) return;
+    try {
+      this.ensure();
+      if (!this.ctx) return;
+      const t = this.ctx.currentTime;
+      const durSec = durMs / 1000;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(startFreq, t);
+      osc.frequency.exponentialRampToValueAtTime(endFreq, t + durSec * 0.85);
+
+      gain.gain.setValueAtTime(0.04, t);
+      gain.gain.linearRampToValueAtTime(0.22, t + durSec * 0.7);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + durSec);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + durSec);
+
+      setTimeout(() => this.playTorqueClick(), durMs * 0.75);
+    } catch (_) {}
+  }
+
   playErrorTone() {
     if (this.muted) return;
     try {
@@ -71,7 +98,9 @@ const audio = new TorqueAudio();
 window.toggleAudio = () => {
   audio.muted = !audio.muted;
   const btn = document.getElementById("audio-toggle-btn");
+  const label = document.getElementById("audio-btn-label");
   if (btn) btn.classList.toggle("muted", audio.muted);
+  if (label) label.textContent = audio.muted ? "SFX MUTED" : "SFX ON";
 };
 
 // --- CrossTorque Domain Constants ---
@@ -108,6 +137,7 @@ class CrossTorqueSimulatorEngine {
     this.completedSteps = 0;
     this.mistakeCount = 0;
     this.focusMode = false;
+    this.proximityLOD = false;
     this.flangeWarpMm = 0.02;
     this.lastStatus = "NOMINAL";
     this.lastVerdictText = "NOMINAL · RUNOUT 0.02 mm · TORQUE BOLT #1 (35 Nm)";
@@ -337,6 +367,53 @@ function renderLoop() {
     ctx.lineWidth = 2;
     ctx.stroke();
     ctx.restore();
+
+    // Finite Element Clamping Stress Heatmap Ring (5-Bolt ASME/Automotive)
+    const numSegments = 30;
+    for (let s = 0; s < numSegments; s++) {
+      const a1 = (s / numSegments) * Math.PI * 2;
+      const a2 = ((s + 1) / numSegments) * Math.PI * 2;
+      const midAngle = (a1 + a2) / 2;
+
+      let localStress = 0;
+      bolts.forEach((b) => {
+        const bAngle = (b.angleDeg * Math.PI) / 180.0;
+        const diff = Math.atan2(Math.sin(midAngle - bAngle), Math.cos(midAngle - bAngle));
+        const weight = Math.max(0, Math.cos(diff));
+        localStress += b.appliedTorqueNm * Math.pow(weight, 2.2);
+      });
+
+      const isWarp = snap.flangeWarpMm > 0.05;
+      let segColor = "rgba(148, 163, 184, 0.25)";
+      let strokeW = 4;
+      if (isWarp) {
+        segColor = "rgba(239, 68, 68, 0.9)";
+        strokeW = 6;
+      } else if (snap.isComplete) {
+        segColor = "rgba(0, 240, 255, 0.85)";
+        strokeW = 4.5;
+      } else if (localStress > 45) {
+        segColor = "rgba(16, 185, 129, 0.85)";
+        strokeW = 4.5;
+      } else if (localStress > 10) {
+        segColor = "rgba(245, 158, 11, 0.75)";
+        strokeW = 3.5;
+      }
+
+      const rCm = HUB_RADIUS_CM * 1.35;
+      const p1 = projectPoint(rCm * Math.cos(a1), HUB_CENTER_Y_CM + rCm * Math.sin(a1), HUB_DEPTH_Z_CM);
+      const p2 = projectPoint(rCm * Math.cos(a2), HUB_CENTER_Y_CM + rCm * Math.sin(a2), HUB_DEPTH_Z_CM);
+      if (p1.visible && p2.visible) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.moveTo(p1.x, p1.y);
+        ctx.lineTo(p2.x, p2.y);
+        ctx.strokeStyle = segColor;
+        ctx.lineWidth = strokeW;
+        ctx.stroke();
+        ctx.restore();
+      }
+    }
   }
 
   // Draw StarChord between previous and active target bolt (if not in focus mode)
@@ -390,6 +467,35 @@ function renderLoop() {
       ctx.shadowColor = "#00F0FF";
       ctx.shadowBlur = 20;
       ctx.stroke();
+
+      // Precision Proximity Alignment Crosshair & Torque Arc (Henderson & Feiner Phase Shifter)
+      if (engine.proximityLOD) {
+        ctx.save();
+        const reticleR = 5.2 * p.scale * 1.5;
+        ctx.strokeStyle = "rgba(0, 240, 255, 0.85)";
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(p.x - reticleR - 5, p.y);
+        ctx.lineTo(p.x - reticleR + 3, p.y);
+        ctx.moveTo(p.x + reticleR - 3, p.y);
+        ctx.lineTo(p.x + reticleR + 5, p.y);
+        ctx.moveTo(p.x, p.y - reticleR - 5);
+        ctx.lineTo(p.x, p.y - reticleR + 3);
+        ctx.moveTo(p.x, p.y + reticleR - 3);
+        ctx.lineTo(p.x, p.y + reticleR + 5);
+        ctx.stroke();
+
+        const targetTorque = snap.targetTorqueNm;
+        const pct = Math.min(1.0, b.appliedTorqueNm / targetTorque);
+        if (pct > 0) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, 4.4 * p.scale * 1.5, -Math.PI / 2, -Math.PI / 2 + pct * 2 * Math.PI);
+          ctx.strokeStyle = pct >= 1 ? "#10B981" : "#FACC15";
+          ctx.lineWidth = 3.5;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
     }
 
     // Bolt Label
@@ -512,7 +618,7 @@ function updateEdgeArrow() {
 window.ctHandleBoltClick = (boltId) => {
   const res = engine.applyBoltTorque(boltId);
   if (res.accepted) {
-    audio.playTorqueClick();
+    audio.playTorquePitchRamp(280, 440, 880);
   } else {
     audio.playErrorTone();
   }
@@ -542,6 +648,43 @@ window.ctHandleFocusReset = () => {
   syncUI();
 };
 
+window.ctToggleProximityLOD = () => {
+  engine.proximityLOD = !engine.proximityLOD;
+  const btn = document.getElementById("btnProximityLOD");
+  const ind = document.getElementById("proximity-indicator");
+  if (btn) btn.classList.toggle("active", engine.proximityLOD);
+  if (ind) ind.style.display = engine.proximityLOD ? "block" : "none";
+  audio.playTorqueClick();
+  syncUI();
+};
+
+window.dispatchVoiceCommand = (cmd) => {
+  cmd = (cmd || "").trim().toUpperCase();
+  const transcriptEl = document.getElementById("asr-transcript");
+  const transcriptBox = document.querySelector(".asr-transcript-box");
+  if (transcriptEl) transcriptEl.textContent = `"${cmd}"`;
+  if (transcriptBox) {
+    transcriptBox.classList.add("pulse");
+    setTimeout(() => transcriptBox.classList.remove("pulse"), 800);
+  }
+  audio.playTorqueClick();
+
+  if (cmd.includes("FOCUS")) {
+    window.ctHandleFocusReset();
+  } else if (cmd.includes("NEXT") || cmd.includes("TORQUE") || cmd.includes("PULSE")) {
+    window.ctHandleTorquePulse();
+  } else if (cmd.includes("RUNOUT") || cmd.includes("WARP") || cmd.includes("CHECK") || cmd.includes("WRONG")) {
+    window.ctHandleWrongBolt();
+  } else if (cmd.includes("PROXIMITY") || cmd.includes("ALIGN") || cmd.includes("ENGAGE")) {
+    window.ctToggleProximityLOD();
+  } else if (cmd.includes("RESET")) {
+    engine.reset();
+    syncUI();
+  } else if (cmd.includes("SWITCH") || cmd.includes("6-BOLT") || cmd.includes("FLANGE")) {
+    window.location.href = "index.html";
+  }
+};
+
 window.ctSetYaw = (val) => {
   cameraYawDeg = val;
   const yawText = document.getElementById("yawValueText");
@@ -551,6 +694,19 @@ window.ctSetYaw = (val) => {
   }
   updateEdgeArrow();
 };
+
+window.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && (e.target === document.body || e.target === canvas)) {
+    e.preventDefault();
+    window.ctHandleTorquePulse();
+    return;
+  }
+  if (e.key === "x" || e.key === "X") window.ctHandleWrongBolt();
+  if (e.key === "f" || e.key === "F") window.ctHandleFocusReset();
+  if (e.key === "p" || e.key === "P") window.ctToggleProximityLOD();
+  if (e.key === "r" || e.key === "R") { engine.reset(); syncUI(); }
+  if (e.key === "m" || e.key === "M") window.toggleAudio();
+});
 
 // Canvas click detector on bolts
 if (canvas) {
@@ -570,6 +726,18 @@ if (canvas) {
     }
   });
 }
+
+// Hotkey Navigation Support
+window.addEventListener("keydown", (e) => {
+  if (e.code === "Space" && (e.target === document.body || e.target === canvas)) {
+    e.preventDefault();
+    window.ctHandleTorquePulse();
+    return;
+  }
+  if (e.key === "x" || e.key === "X") window.ctHandleWrongBolt();
+  if (e.key === "f" || e.key === "F" || e.key === "r" || e.key === "R") window.ctHandleFocusReset();
+  if (e.key === "m" || e.key === "M") window.toggleAudio();
+});
 
 // --- Automated LEAF Test Runner in Browser ---
 window.ctRunLeafSuite = async () => {

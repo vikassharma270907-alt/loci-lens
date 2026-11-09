@@ -44,7 +44,7 @@ TorqueLock AR grounds the ancient Method of Loci directly on the physical workpi
 3. PRACTISE: Progressive torque ramp simulation featuring cognitive Focus Mode (Henderson & Feiner / Lindlbauer et al.) and real-time Gasket Warp Detection (1.8mm deflection warning).
 4. SUMMARY: Displays session metrics and routes missed bolts into a Leitner 3-box spaced repetition system for targeted remediation.
 
-Grounded in 14 peer-reviewed HCI papers and verified with 100% automated test pass rate (20/20 passing).
+Grounded in 14 peer-reviewed HCI papers and verified with 100% automated test pass rate (27/27 passing across 6-bolt and 5-bolt suites).
 
 GitHub Repository: https://github.com/vikassharma270907-alt/loci-lens
 Interactive Optical Preview: Run `npm run preview` -> http://localhost:8080/

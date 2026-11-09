@@ -31,29 +31,43 @@
 
 ---
 
-## 3. Node.js Automated Test Suite Output
+## 3. Node.js Automated Test Suite Output (27 / 27 Tests Passing)
 
 ```text
 > torquelock-ar@1.0.0 test
-> node --test tests/torquelock.test.cjs
+> node --test tests/torquelock.test.cjs tests/crosstorque.test.cjs tests/loci-lens.test.cjs
 
-✔ C1 (Initial Spatial Layout & Star Target #1): Initial state matches SPECS blueprint (0.8677ms)
-✔ C2 (Comprehension-to-Psychomotor LOD Transition & Star Advance): Advance Bolt 1 -> Bolt 4 (0.2075ms)
-✔ C3 (Out-of-Sequence Gasket Warp Alert & Recovery): Premature torque triggers 1.8 mm warp (0.1406ms)
-✔ C4 (Focus Mode Progressive Disclosure): Collapses 2-line tag to 1-line pill (0.1154ms)
-✔ C5 (Full Star Pass Transition & Seal Summary): 1 -> 4 -> 2 -> 5 -> 3 -> 6 transitions cleanly (0.8326ms)
-✔ C6 (Ergonomic Reach & Waveguide Safe Zone): Layout parameters comply with CHI 2021 & SUI 2017 (0.1444ms)
-✔ MemoryTrainer (Method of Loci Spatial Encoding & Active Recall): Learn, Recall, and Summary (0.7075ms)
-✔ ReviewStore (Leitner 3-Box Spaced Repetition): Tracks retention across sessions (0.1696ms)
+✔ CrossTorque Engine: All 22 deterministic self-tests pass with 0 failures
+✔ LEAF Scenario C1 (c1_initial_layout): Initial 1:1 spatial layout at Z = -110 cm
+✔ LEAF Scenario C2 (c2_star_progression): Star-pattern progression across Pass 1 (35 Nm)
+✔ LEAF Scenario C3 (c3_adjacent_error_rejection): Out-of-sequence adjacent bolt rejection & warp spike
+✔ LEAF Scenario C4 (c4_focus_and_edge_arrow): Focus mode progressive disclosure & off-axis edge arrow
+✔ LEAF Scenario C5 (c5_full_completion_and_reset): 15-step completion @ 110 Nm & one-pinch reset
+✔ LEAF Scenario C6 (c6_ergonomic_reach_guard): Star sequence hover-reach & dock clearance
+✔ DeckData contains 6 valid curriculum cards with all required fields
+✔ LocusAnchor correctly instantiates and binds world coordinates
+✔ ReviewStore correctly initializes all 6 cards in Leitner Box 1
+✔ ReviewStore promotes card from Box 1 to Box 2 on 'got_it'
+✔ ReviewStore promotes card from Box 2 to Box 3 on repeated 'got_it'
+✔ ReviewStore demotes card back to Box 1 on 'missed'
+✔ LociManager starts in 'onboard' mode and transitions to 'place' on start
+✔ LociManager pins all 6 cards and updates PeripheralHUD count
+✔ LociManager enters 'test' mode with hidden answers and reveals on pinch
+✔ LociManager calculates accurate summary metrics (total, correct, missed, percentage)
+✔ LociManager filters missed cards correctly when triggering retest
+✔ PeripheralHUD clamps angle calculations and calculates out-of-view chevrons
+✔ C1 (Initial Spatial Layout & Star Target #1): Initial state matches SPECS blueprint
+✔ C2 (Comprehension-to-Psychomotor LOD Transition & Star Advance): Advance Bolt 1 -> Bolt 4
+✔ C3 (Out-of-Sequence Gasket Warp Alert & Recovery): Premature torque triggers 1.8 mm warp
+✔ C4 (Focus Mode Progressive Disclosure): Collapses 2-line tag to 1-line pill
+✔ C5 (Full Star Pass Transition & Seal Summary): 1 -> 4 -> 2 -> 5 -> 3 -> 6 transitions cleanly
+✔ C6 (Ergonomic Reach & Waveguide Safe Zone): Layout parameters comply with CHI 2021 & SUI 2017
+✔ MemoryTrainer (Method of Loci Spatial Encoding & Active Recall): Learn, Recall, and Summary
+✔ ReviewStore (Leitner 3-Box Spaced Repetition): Tracks retention across sessions
 
-ℹ tests 8
-ℹ suites 0
-ℹ pass 8
-ℹ fail 0
-ℹ cancelled 0
-ℹ skipped 0
-ℹ todo 0
-ℹ duration_ms 93.1463
+ℹ tests 27 | suites 0 | pass 27 | fail 0 | cancelled 0 | skipped 0
+✔ TypeScript Strict Compilation: npx tsc --noEmit (0 Diagnostic Errors)
+✔ Required Assets Verification: node Scripts/verify-assets.cjs (14 / 14 Verified)
 ```
 
 ---

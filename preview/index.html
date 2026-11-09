@@ -12,6 +12,13 @@
   <div id="viewport-container">
     <canvas id="renderCanvas"></canvas>
 
+    <!-- Viewport Optical HUD Header -->
+    <div class="viewport-hud-header">
+      <div class="hud-pill"><span class="hud-led"></span> FOV: 37°V × 32°H</div>
+      <div class="hud-pill">Z = -110 cm BENCHMARK</div>
+      <div class="hud-pill"><span class="hud-led cyan"></span> BLE: 2.4 GHz LINKED</div>
+    </div>
+
     <!-- Simulated SPECS Optical Waveguide Display Frame (37° V x 32° H) -->
     <div class="specs-waveguide-frame">
       <div class="waveguide-corner-tr"></div>
@@ -43,6 +50,12 @@
     <!-- Out-of-View Directional Chevron Cue -->
     <div class="out-of-view-chevron" id="out-of-view-cue">➤</div>
 
+    <!-- Out-of-FOV Yellow Edge Guidance Banner (Gruenefeld et al. SUI 2017) -->
+    <div class="hud-edge-arrow" id="hud-edge-arrow">LOOK RIGHT &gt;&gt; BOLT #1</div>
+
+    <!-- Proximity Tool Alignment Indicator (Henderson & Feiner Phase Shifter) -->
+    <div class="proximity-indicator" id="proximity-indicator">⚡ PROXIMITY ENGAGED · 1:1 SOCKET SEATED</div>
+
     <!-- Peripheral HUD (Lower Right Margin, Lu et al. 2020) -->
     <div class="peripheral-hud" id="peripheral-hud">
       <svg class="hud-ring-svg" viewBox="0 0 120 120">
@@ -52,6 +65,11 @@
       <div class="hud-ring-label">Star Step</div>
       <div class="hud-ring-val" id="hud-val">1/6</div>
       <div class="hud-ring-sub" id="hud-sub">Pass 1 (35 Nm)</div>
+    </div>
+
+    <!-- Viewport Quick Controls Hint -->
+    <div class="viewport-quick-hint">
+      <span>[Space] Advance Star Bolt</span> · <span>[Pinch] 3D Bolt Select</span> · <span>[Right-Drag] Orbit View</span>
     </div>
   </div>
 
@@ -227,6 +245,10 @@
             <span>👁️ Focus Mode</span>
             <kbd>F</kbd>
           </button>
+          <button class="btn-prox-mode" id="btn-prox-mode" onclick="window.triggerProximityLOD()">
+            <span>🔍 Proximity LOD</span>
+            <kbd>P</kbd>
+          </button>
         </div>
         <button class="btn-reset" onclick="window.triggerReset()">
           <span>↺ Reset / Recover Flange</span>
@@ -236,6 +258,28 @@
       <p style="font-size:10px; color:#64748b; margin-top:10px; line-height:1.4;">
         💡 <strong>SIK Pinch:</strong> Left-click any of the 6 hexagonal bolt nodes in the 3D perspective to simulate physical hand tracking pinch selection!
       </p>
+    </div>
+
+    <!-- Hands-Free Snap SPECS ASR Voice Commands -->
+    <div class="panel-section asr-section">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+        <h3 style="margin-bottom:0;">
+          <span>🎤 SPECS ASR Voice Commands</span>
+        </h3>
+        <span class="asr-badge" id="asr-status">LISTENING</span>
+      </div>
+      <div class="asr-transcript-box">
+        <span class="asr-icon">🗣️</span>
+        <span id="asr-transcript">"Awaiting hands-free speech command..."</span>
+      </div>
+      <div class="asr-chip-grid">
+        <button class="asr-chip" onclick="window.dispatchVoiceCommand('FOCUS MODE')">"Focus Mode"</button>
+        <button class="asr-chip" onclick="window.dispatchVoiceCommand('NEXT BOLT')">"Next Bolt"</button>
+        <button class="asr-chip" onclick="window.dispatchVoiceCommand('CHECK RUNOUT')">"Check Runout"</button>
+        <button class="asr-chip" onclick="window.dispatchVoiceCommand('PROXIMITY LOD')">"Proximity LOD"</button>
+        <button class="asr-chip" onclick="window.dispatchVoiceCommand('SWITCH PATTERN')">"Switch to 5-Bolt"</button>
+        <button class="asr-chip" onclick="window.dispatchVoiceCommand('RESET')">"Reset Flange"</button>
+      </div>
     </div>
 
     <!-- Automated LEAF Test Runner -->
@@ -253,6 +297,17 @@
           Run LEAF Suite
         </button>
       </div>
+
+      <!-- Scenario Status Chips -->
+      <div class="leaf-chips-row">
+        <span class="leaf-chip" id="chip-c1">C1 Layout</span>
+        <span class="leaf-chip" id="chip-c2">C2 Star Seq</span>
+        <span class="leaf-chip" id="chip-c3">C3 Warp Alert</span>
+        <span class="leaf-chip" id="chip-c4">C4 Focus LOD</span>
+        <span class="leaf-chip" id="chip-c5">C5 Transition</span>
+        <span class="leaf-chip" id="chip-c6">C6 Ergonomics</span>
+      </div>
+
       <pre class="leaf-log" id="leaf-log">Ready. Click 'Run LEAF Suite' to verify C1–C6 acceptance scenarios.</pre>
     </div>
 

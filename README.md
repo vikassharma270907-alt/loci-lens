@@ -13,11 +13,16 @@
 
 ## 🚀 Key Highlights & Novelty
 
-1. **Flange as Memory Palace:** Symmetrical bolt circles disorient technicians. TorqueLock AR binds the cross-pattern tightening sequence to six spatial memory locations on the flange, combining mnemonic association with hands-free procedural execution.
-2. **Context-Aware Level-of-Detail (Focus Mode):** Based on research by Henderson & Feiner (2011) and Lindlbauer et al. (2019), the interface automatically separates orientation from action. Floating 2-line specification tags collapse into a minimal 1-line eyes-up status ring during wrench engagement so hands and tools have an unobstructed line of sight.
-3. **Out-of-Sequence Hazard Guidance:** Tightening bolts out of order squeezes gaskets unevenly and warps castings. If an out-of-sequence bolt is torqued, the gasket plane turns coral red, a spatial alarm triggers, and a high-contrast peripheral arrow directs the user to relieve the fastener before the seal is ruined.
-4. **Decoupled Pure TypeScript Domain Engine:** Built with zero Lens Studio scene dependencies in `Assets/Scripts/SequenceEngine.ts`, enabling 100% deterministic unit testing and automated LEAF scenario verification.
-5. **Zero HUD Clutter & Ergonomic Reach:** Keeps eye level ($y = -4\text{ cm}$ to $+15\text{ cm}$) strictly empty. Interactive controls sit in the ergonomic lower visual field ($y = -28\text{ cm}$, $z = -105\text{ cm}$) to eliminate shoulder fatigue ("gorilla arm").
+1. **Flange as Memory Palace (Method of Loci):** Symmetrical bolt circles disorient technicians. TorqueLock AR binds the cross-pattern tightening sequence directly to physical fastener loci on the flange, combining spatial mnemonic association with hands-free procedural muscle memory.
+2. **Dual-Workpiece Fastener Engine:** Unifies two ubiquitous symmetrical mechanical assemblies on a single deterministic state machine:
+   - **6-Bolt ASME PCC-1 Pressure Flange:** $1 \rightarrow 4 \rightarrow 2 \rightarrow 5 \rightarrow 3 \rightarrow 6$ across 35 Nm (Snug), 70 Nm (Intermediate), and 100 Nm (Final Spec).
+   - **5-Bolt Automotive Star Lug Hub:** $1 \rightarrow 3 \rightarrow 5 \rightarrow 2 \rightarrow 4$ across 35 Nm (Snug), 75 Nm (Intermediate), and 110 Nm (Final Lock).
+3. **Finite Element Gasket Stress Heatmap:** Projects a real-time circumferential stress gradient onto the 3D flange sealing plane. Symmetrical cross-torquing produces an equalized emerald green (`#10B981`) and cyan (`#00F0FF`) distribution; adjacent tightening mistakes immediately trigger localized coral red (`#EF4444`) pinch deflection (+0.24 mm to +1.8 mm) with opposite-side lift-off.
+4. **Eyes-Up Continuous Acoustic Pitch Ramp (Blind Wrenching Audio):** Eliminates the need to look at numbers while pulling a two-handed torque wrench. A smooth frequency ramp glides from 440 Hz up to 880 Hz as torque approaches the target, followed by a crisp mechanical ratchet snap click when the pass is locked.
+5. **Dynamic Proximity LOD (Henderson & Feiner Phase Shifter):** Automatically transitions from **Macro Navigation** (wide-angle star chords and pass overviews) to **Micro Psychomotor Alignment** (faded secondary lines, circular alignment crosshair, and radial torque progress gauge) as the technician leans within tool reach.
+6. **Snap SPECS ASR Voice Commands:** Hands-free speech recognition enables workers wearing greasy gloves to command the glasses: `"Focus Mode"`, `"Next Bolt"`, `"Check Runout"`, `"Proximity LOD"`, and `"Switch Pattern"`.
+7. **Zero HUD Clutter & Ergonomic Reach:** Keeps eye level ($y = -4\text{ cm}$ to $+15\text{ cm}$) strictly empty. Interactive controls sit in the ergonomic lower visual field ($y = -28\text{ cm}$, $z = -105\text{ cm}$) to eliminate shoulder fatigue ("gorilla arm").
+8. **Decoupled Pure TypeScript Domain Engine & CI Safety:** Zero Lens Studio scene dependencies in domain state machines, verified with 27/27 automated unit & LEAF tests passing and 0 TypeScript diagnostic errors.
 
 ---
 
@@ -147,16 +152,28 @@ torquelock-ar/
 ## 🧪 Testing & Verification
 
 ### Running Automated Tests
-Execute the complete test suite (20 unit and integration tests covering Done Criteria C1 through C6):
+Execute the complete test suite (27 unit and integration tests covering Done Criteria C1 through C6 across both 6-bolt and 5-bolt engines):
 ```bash
 npm test
+```
+
+### TypeScript Strict Compilation Check
+Verify zero type diagnostic errors across all TypeScript source files:
+```bash
+npm run typecheck
+```
+
+### Required Asset Integrity Check
+Verify that all 14 required submission documents, media files, and preview assets exist:
+```bash
+npm run verify
 ```
 
 ### Running the Interactive Preview Simulator
 Launch the local web server to experience the SPECS 27 optical simulation in any browser:
 ```bash
 npm run preview
-# Open http://localhost:8080/ in your browser
+# Open http://localhost:8080/ in your browser (features both 6-bolt and 5-bolt modes)
 ```
 
 ### Running Automated LEAF Scenarios in Lens Studio

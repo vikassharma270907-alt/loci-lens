@@ -90,7 +90,9 @@ By projecting 1:1 spatially registered augmented reality indicators onto the phy
 ---
 
 ## 4. Technical Verification & Done Criteria
-- **20 / 20 Automated Tests Passing (100% OK):** Verified via `npm test` across Done Criteria C1 through C6.
+- **27 / 27 Automated Tests Passing (100% OK):** Verified via `npm test` across Done Criteria C1 through C6 for both 6-bolt and 5-bolt suites.
+- **TypeScript Strict Compilation:** Verified with `npm run typecheck` (0 diagnostic errors).
+- **Required Asset Integrity:** 14 / 14 required assets verified via `npm run verify`.
 - **LEAF Scenario Suite (`TorqueLockScenarios.ts`):** Deterministic evaluation within Lens Studio.
 - **Standalone Optical Preview (`preview/`):** Perspective 3D simulator modeling the $37^\circ\text{ V} \times 32^\circ\text{ H}$ waveguide display, audio synth, Focus Mode, and live test runner at `http://localhost:8080/`.
 - **Demo Video:** `torquelock_ar_demo_walkthrough.mp4` (1080p, 2m 22s, fully narrated, subtitle tracks, thumbnail).

@@ -45,6 +45,32 @@ class AudioSynthesizer {
     setTimeout(() => this.playTone(1760, 100, "sine", 0.18), 40);
   }
 
+  playTorquePitchRamp(durMs = 280, startFreq = 440, endFreq = 880) {
+    if (this.muted) return;
+    try {
+      this.ensureContext();
+      if (!this.ctx) return;
+      const t = this.ctx.currentTime;
+      const durSec = durMs / 1000;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      osc.type = "triangle";
+      osc.frequency.setValueAtTime(startFreq, t);
+      osc.frequency.exponentialRampToValueAtTime(endFreq, t + durSec * 0.85);
+
+      gain.gain.setValueAtTime(0.04, t);
+      gain.gain.linearRampToValueAtTime(0.2, t + durSec * 0.7);
+      gain.gain.exponentialRampToValueAtTime(0.001, t + durSec);
+
+      osc.connect(gain);
+      gain.connect(this.ctx.destination);
+      osc.start(t);
+      osc.stop(t + durSec);
+
+      setTimeout(() => this.playRatchetLock(), durMs * 0.75);
+    } catch (_) {}
+  }
+
   playWarpAlarm() {
     this.playTone(220, 150, "sawtooth", 0.22);
     setTimeout(() => this.playTone(180, 200, "sawtooth", 0.22), 120);
@@ -81,6 +107,7 @@ const state = {
   passIndex: 1, // 1, 2, 3
   starCursor: 0, // 0..5 index into STAR_SEQUENCE
   focusMode: false,
+  proximityLOD: false, // Henderson & Feiner Proximity Phase Shifter
   warpedBoltId: null,
   isSealed: false,
   bolts: BOLT_COORDS.map((b, idx) => ({
@@ -196,14 +223,66 @@ function drawScene() {
     ctx.lineWidth = 1.5;
     ctx.stroke();
 
-    // 3. Draw Gasket Compression Layer (Radius 17 cm, y = -17 cm)
-    const gasketCenter = project3D(0, -17, -115, w, h);
-    if (gasketCenter) {
-      ctx.beginPath();
-      ctx.arc(gasketCenter.screenX, gasketCenter.screenY, 17 * gasketCenter.scale, 0, Math.PI * 2);
-      ctx.strokeStyle = state.warpedBoltId !== null ? "#EF4444" : (state.isSealed ? "#00F0FF" : "#10B981");
-      ctx.lineWidth = 3;
-      ctx.stroke();
+    // 3. Draw Gasket Compression & Finite Element Stress Heatmap Ring (Radius 17 cm, y = -17 cm)
+    const numSegments = 36;
+    const radiusCm = 17.0;
+    const gasketY = -17.0;
+
+    for (let s = 0; s < numSegments; s++) {
+      const a1 = (s / numSegments) * Math.PI * 2;
+      const a2 = ((s + 1) / numSegments) * Math.PI * 2;
+      const midAngle = (a1 + a2) / 2;
+
+      // Calculate localized compression stress at midAngle from all 6 bolts
+      let localStress = 0;
+      BOLT_COORDS.forEach((b, idx) => {
+        const boltAngle = Math.atan2(b.z - (-115), b.x);
+        const diff = Math.atan2(Math.sin(midAngle - boltAngle), Math.cos(midAngle - boltAngle));
+        const boltWeight = Math.max(0, Math.cos(diff));
+        const boltTorque = state.bolts[idx].currentTorqueNm;
+        localStress += boltTorque * Math.pow(boltWeight, 2.2);
+      });
+
+      // Inject localized warp spike if out-of-sequence error occurred
+      let isWarpZone = false;
+      if (state.warpedBoltId !== null) {
+        const warpedBolt = BOLT_COORDS[state.warpedBoltId - 1];
+        const warpedAngle = Math.atan2(warpedBolt.z - (-115), warpedBolt.x);
+        const wDiff = Math.abs(Math.atan2(Math.sin(midAngle - warpedAngle), Math.cos(midAngle - warpedAngle)));
+        if (wDiff < Math.PI / 3) {
+          isWarpZone = true;
+          localStress += 120; // Deflection spike
+        }
+      }
+
+      // Determine segment color gradient (Emerald = nominal, Cyan = sealed, Coral = warp, Amber = partial)
+      let segColor = "rgba(148, 163, 184, 0.25)";
+      let strokeW = 3;
+      if (isWarpZone) {
+        segColor = "rgba(239, 68, 68, 0.9)";
+        strokeW = 5.5;
+      } else if (state.isSealed) {
+        segColor = "rgba(0, 240, 255, 0.85)";
+        strokeW = 4;
+      } else if (localStress > 55) {
+        segColor = "rgba(16, 185, 129, 0.85)";
+        strokeW = 4;
+      } else if (localStress > 15) {
+        segColor = "rgba(245, 158, 11, 0.75)";
+        strokeW = 3.5;
+      }
+
+      const p1 = project3D(radiusCm * Math.cos(a1), gasketY, -115 + radiusCm * Math.sin(a1), w, h);
+      const p2 = project3D(radiusCm * Math.cos(a2), gasketY, -115 + radiusCm * Math.sin(a2), w, h);
+
+      if (p1 && p2) {
+        ctx.beginPath();
+        ctx.moveTo(p1.screenX, p1.screenY);
+        ctx.lineTo(p2.screenX, p2.screenY);
+        ctx.strokeStyle = segColor;
+        ctx.lineWidth = strokeW * p1.scale / 5;
+        ctx.stroke();
+      }
     }
     ctx.restore();
   }
@@ -211,8 +290,9 @@ function drawScene() {
   // 4. Draw Star-Pattern Cross Lines (Dashed sequence path 1 -> 4 -> 2 -> 5 -> 3 -> 6)
   ctx.save();
   ctx.setLineDash([4, 4]);
-  ctx.strokeStyle = "rgba(0, 240, 255, 0.35)";
-  ctx.lineWidth = 1.5;
+  // Henderson & Feiner Proximity LOD: Fade secondary chord lines when tool is engaged
+  ctx.strokeStyle = state.proximityLOD ? "rgba(0, 240, 255, 0.1)" : "rgba(0, 240, 255, 0.35)";
+  ctx.lineWidth = state.proximityLOD ? 1.0 : 1.5;
   ctx.beginPath();
   for (let i = 0; i < STAR_SEQUENCE.length; i++) {
     const boltIdx = STAR_SEQUENCE[i] - 1;
@@ -301,6 +381,38 @@ function drawScene() {
       ctx.stroke();
       ctx.restore();
 
+      // Precision Proximity Alignment Crosshair & Torque Arc (Henderson & Feiner Phase Shifter)
+      if (state.proximityLOD) {
+        ctx.save();
+        const reticleR = 6.2 * proj.scale;
+        ctx.strokeStyle = "rgba(0, 240, 255, 0.85)";
+        ctx.lineWidth = 1.5;
+        // 4 orthogonal ticks
+        ctx.beginPath();
+        ctx.moveTo(proj.screenX - reticleR - 6, proj.screenY);
+        ctx.lineTo(proj.screenX - reticleR + 4, proj.screenY);
+        ctx.moveTo(proj.screenX + reticleR - 4, proj.screenY);
+        ctx.lineTo(proj.screenX + reticleR + 6, proj.screenY);
+        ctx.moveTo(proj.screenX, proj.screenY - reticleR - 6);
+        ctx.lineTo(proj.screenX, proj.screenY - reticleR + 4);
+        ctx.moveTo(proj.screenX, proj.screenY + reticleR - 4);
+        ctx.lineTo(proj.screenX, proj.screenY + reticleR + 6);
+        ctx.stroke();
+
+        // Animated circular torque load arc
+        const currentTorque = boltState.currentTorqueNm;
+        const targetTorque = PASS_TARGETS_NM[state.passIndex - 1];
+        const pct = Math.min(1.0, currentTorque / targetTorque);
+        if (pct > 0) {
+          ctx.beginPath();
+          ctx.arc(proj.screenX, proj.screenY, 5.2 * proj.scale, -Math.PI / 2, -Math.PI / 2 + pct * 2 * Math.PI);
+          ctx.strokeStyle = pct >= 1 ? "#10B981" : "#FACC15";
+          ctx.lineWidth = 3.5;
+          ctx.stroke();
+        }
+        ctx.restore();
+      }
+
       // Update Floating Spec Tag position in DOM (11 cm above active bolt in Y)
       const tagProj = project3D(b.x, b.y + 11, b.z, w, h);
       const tagEl = document.getElementById("spec-tag-hud");
@@ -336,6 +448,30 @@ function drawScene() {
     warpTextEl.textContent = `!! SEQUENCE ERROR: UNDO BOLT ${state.warpedBoltId} (-${targetNm} Nm) !!`;
   } else {
     warpEl.style.display = "none";
+  }
+
+  // Out-of-FOV Gaze Guidance (Gruenefeld et al. SUI 2017)
+  const edgeArrowEl = document.getElementById("hud-edge-arrow");
+  if (edgeArrowEl && !state.isSealed) {
+    const activeBolt = BOLT_COORDS[activeBoltId - 1];
+    const boltAzimuthDeg = (Math.atan2(activeBolt.x, Math.abs(activeBolt.z)) * 180.0) / Math.PI;
+    const relativeAngleDeg = boltAzimuthDeg + (state.cam.yaw * 180.0 / Math.PI);
+
+    if (relativeAngleDeg > 13.0) {
+      edgeArrowEl.style.display = "block";
+      edgeArrowEl.style.left = "auto";
+      edgeArrowEl.style.right = "36px";
+      edgeArrowEl.textContent = `LOOK RIGHT >> BOLT #${activeBoltId}`;
+    } else if (relativeAngleDeg < -13.0) {
+      edgeArrowEl.style.display = "block";
+      edgeArrowEl.style.left = "36px";
+      edgeArrowEl.style.right = "auto";
+      edgeArrowEl.textContent = `<< LOOK LEFT BOLT #${activeBoltId}`;
+    } else {
+      edgeArrowEl.style.display = "none";
+    }
+  } else if (edgeArrowEl) {
+    edgeArrowEl.style.display = "none";
   }
 
   // Update Telemetry & Peripheral HUD
@@ -489,7 +625,8 @@ window.triggerApplyTorque = function() {
 
   bolt.currentTorqueNm = targetNm;
   bolt.passCompleted = state.passIndex;
-  audio.playRatchetLock();
+  // Dynamic continuous acoustic torque pitch ramp into mechanical ratchet snap
+  audio.playTorquePitchRamp(280, 440, 880);
 
   // Advance sequence
   state.starCursor++;
@@ -521,6 +658,43 @@ window.triggerSimError = function() {
 window.triggerFocusMode = function() {
   state.focusMode = !state.focusMode;
   audio.playTone(state.focusMode ? 600 : 750, 60, "sine");
+};
+
+window.triggerProximityLOD = function() {
+  state.proximityLOD = !state.proximityLOD;
+  const btn = document.getElementById("btn-prox-mode");
+  const ind = document.getElementById("proximity-indicator");
+  if (btn) btn.classList.toggle("active", state.proximityLOD);
+  if (ind) ind.style.display = state.proximityLOD ? "block" : "none";
+  audio.playTone(state.proximityLOD ? 920 : 620, 80, "sine");
+};
+
+window.dispatchVoiceCommand = function(cmd) {
+  cmd = (cmd || "").trim().toUpperCase();
+  const transcriptEl = document.getElementById("asr-transcript");
+  const transcriptBox = document.querySelector(".asr-transcript-box");
+  if (transcriptEl) {
+    transcriptEl.textContent = `"${cmd}"`;
+  }
+  if (transcriptBox) {
+    transcriptBox.classList.add("pulse");
+    setTimeout(() => transcriptBox.classList.remove("pulse"), 800);
+  }
+  audio.playTone(1046.5, 90, "sine");
+
+  if (cmd.includes("FOCUS")) {
+    window.triggerFocusMode();
+  } else if (cmd.includes("NEXT") || cmd.includes("TORQUE") || cmd.includes("APPLY")) {
+    window.triggerApplyTorque();
+  } else if (cmd.includes("RUNOUT") || cmd.includes("WARP") || cmd.includes("CHECK")) {
+    window.triggerSimError();
+  } else if (cmd.includes("PROXIMITY") || cmd.includes("ENGAGE") || cmd.includes("ALIGN")) {
+    window.triggerProximityLOD();
+  } else if (cmd.includes("RESET")) {
+    window.triggerReset();
+  } else if (cmd.includes("SWITCH") || cmd.includes("5-BOLT") || cmd.includes("LUG")) {
+    window.location.href = "crosstorque.html";
+  }
 };
 
 window.triggerReset = function() {
@@ -627,6 +801,7 @@ window.addEventListener("keydown", (e) => {
   if (e.key === "e" || e.key === "E") state.cam.y += speed;
   if (e.key === "x" || e.key === "X") window.triggerSimError();
   if (e.key === "f" || e.key === "F") window.triggerFocusMode();
+  if (e.key === "p" || e.key === "P") window.triggerProximityLOD();
   if (e.key === "r" || e.key === "R") window.triggerReset();
   if (e.key === "m" || e.key === "M") window.toggleAudio();
   if (e.key === "1") window.setMode("LEARN");
@@ -652,21 +827,29 @@ window.runLeafHarness = async function() {
   }
 
   const delay = (ms) => new Promise(res => setTimeout(res, ms));
+  const updateChip = (id, status) => {
+    const el = document.getElementById(id);
+    if (el) el.className = `leaf-chip ${status}`;
+  };
 
   try {
-    // Reset state before tests
+    // Reset state and chips before tests
     window.triggerReset();
+    ["chip-c1", "chip-c2", "chip-c3", "chip-c4", "chip-c5", "chip-c6"].forEach(id => updateChip(id, ""));
     await delay(150);
 
     // Scenario C1: Initial Spatial Layout
+    updateChip("chip-c1", "running");
     log("[LEAF 1/6] Running C1_InitialSpatialLayoutScenario...");
     const ringZ = BOLT_COORDS[STAR_SEQUENCE[state.starCursor] - 1].z;
     if (ringZ !== -130.0) throw new Error(`C1 Failed: Ring Z (${ringZ}) != -130.0`);
     if (state.passIndex !== 1 || state.starCursor !== 0) throw new Error("C1 Failed: State mismatch");
     log("  ✔ PASS: Flange at (0, -18, -115), Ring at Bolt 1 (Z = -130 cm), 0 eye-level occlusion.");
+    updateChip("chip-c1", "passed");
     await delay(200);
 
     // Scenario C2: Star Sequence Advance
+    updateChip("chip-c2", "running");
     log("[LEAF 2/6] Running C2_StarSequenceAdvanceScenario...");
     window.triggerApplyTorque();
     await delay(200);
@@ -675,9 +858,11 @@ window.runLeafHarness = async function() {
       throw new Error(`C2 Failed: Expected Bolt 4 at Z = -100 cm, got Bolt ${STAR_SEQUENCE[state.starCursor]} at ${newRingZ}`);
     }
     log("  ✔ PASS: Ring jumped across center to Bolt 4 at (0, -14, -100) cm.");
+    updateChip("chip-c2", "passed");
     await delay(200);
 
     // Scenario C3: Out-of-Sequence Warp Alert & Recovery
+    updateChip("chip-c3", "running");
     log("[LEAF 3/6] Running C3_GasketWarpAndRecoveryScenario...");
     window.triggerSimError();
     await delay(200);
@@ -687,9 +872,11 @@ window.runLeafHarness = async function() {
     await delay(200);
     if (state.warpedBoltId !== null) throw new Error("C3 Failed: Relief failed");
     log("  ✔ PASS: Relieved out-of-sequence bolt; nominal 0.0 mm restored.");
+    updateChip("chip-c3", "passed");
     await delay(200);
 
     // Scenario C4: Focus Mode LOD Collapse
+    updateChip("chip-c4", "running");
     log("[LEAF 4/6] Running C4_FocusModeProgressiveDisclosureScenario...");
     window.triggerFocusMode();
     await delay(150);
@@ -699,9 +886,11 @@ window.runLeafHarness = async function() {
     await delay(150);
     if (state.focusMode) throw new Error("C4 Failed: Focus mode not disabled");
     log("  ✔ PASS: Restored full 2-line comprehension tag.");
+    updateChip("chip-c4", "passed");
     await delay(200);
 
     // Scenario C5: Full Star Pass Transition
+    updateChip("chip-c5", "running");
     log("[LEAF 5/6] Running C5_FullStarPassTransitionScenario...");
     // Complete remaining bolts in Pass 1 (bolts 4, 2, 5, 3, 6)
     while (state.passIndex === 1) {
@@ -710,9 +899,11 @@ window.runLeafHarness = async function() {
     }
     if (state.passIndex !== 2) throw new Error("C5 Failed: Pass 2 transition failed");
     log("  ✔ PASS: Pass 1 completed; cleanly transitioned to Pass 2 (70 Nm INTERMEDIATE) at Bolt 1.");
+    updateChip("chip-c5", "passed");
     await delay(200);
 
     // Scenario C6: Ergonomic Reach
+    updateChip("chip-c6", "running");
     log("[LEAF 6/6] Running C6_ErgonomicReachScenario...");
     const dockZ = -105;
     const dockY = -28;
@@ -720,6 +911,7 @@ window.runLeafHarness = async function() {
       throw new Error("C6 Failed: Dock outside ergonomic envelope");
     }
     log("  ✔ PASS: Simulated arm (IkBodyInteractor) verified dock reachability at z = -105 cm.");
+    updateChip("chip-c6", "passed");
     await delay(200);
 
     log("\n=========================================");
