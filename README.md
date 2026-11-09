@@ -2,6 +2,9 @@
 
 [![Snap SPECS 27](https://img.shields.io/badge/Platform-Snap%20SPECS%2027%20%2F%20Lens%20Studio%205.23.2-yellow.svg)](https://developers.specs.com/)
 [![Devpost Hackathon](https://img.shields.io/badge/Devpost-Learn%20AR%20with%20SPECS-blue.svg)](https://learn-specs.devpost.com/)
+[![CI Status](https://github.com/vikassharma270907-alt/loci-lens/actions/workflows/ci.yml/badge.svg)](https://github.com/vikassharma270907-alt/loci-lens/actions/workflows/ci.yml)
+[![Pages Deployment](https://github.com/vikassharma270907-alt/loci-lens/actions/workflows/pages.yml/badge.svg)](https://vikassharma270907-alt.github.io/loci-lens/)
+[![Vercel Live](https://img.shields.io/badge/Vercel-Live%20Simulator-black?logo=vercel)](https://loci-lens.vercel.app/)
 [![LEAF Verification](https://img.shields.io/badge/LEAF%20Tests-100%25%20Passing%20(6%2F6)-brightgreen.svg)](docs/TEST_REPORT.md)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
