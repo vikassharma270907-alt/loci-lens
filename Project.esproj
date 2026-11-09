@@ -15,7 +15,7 @@ metaInfo:
     []
   lensName: CrossTorqueAR
   lensDescriptors:
-    []
+    - AI_MUTATED
   lensApplicableContext:
     - live_camera
     - reply_camera
@@ -24,8 +24,7 @@ metaInfo:
     - Front
     - Back
   lensClientCompatibilities:
-    - Mobile
-    - Web
+    - Spectacles
   platformBundlesEnabled: false
   iconHash: ""
   videoPreviewHash: ""

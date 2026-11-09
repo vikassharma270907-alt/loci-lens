@@ -498,13 +498,30 @@ function renderLoop() {
       }
     }
 
-    // Bolt Label
+    // Bolt Label (Offset radially outward so it never overlaps the inner bore or flange body)
     if (!snap.focusMode || isActive) {
-      ctx.fillStyle = "#ffffff";
-      ctx.font = "bold 11px monospace";
-      ctx.textAlign = "center";
+      ctx.save();
       const check = isTorqued ? " ✓" : "";
-      ctx.fillText(`#${b.id} · ${b.appliedTorqueNm}Nm${check}`, p.x, p.y + 24 * p.scale);
+      const textStr = `#${b.id} · ${b.appliedTorqueNm}Nm${check}`;
+
+      const dx = p.x - hubCenter.x;
+      const dy = p.y - hubCenter.y;
+      const dist = Math.hypot(dx, dy) || 1;
+      const radialOffset = 25 * p.scale;
+      const textX = p.x + (dx / dist) * radialOffset;
+      const textY = p.y + (dy / dist) * radialOffset;
+
+      ctx.font = "bold 10px monospace";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      const textW = ctx.measureText(textStr).width;
+      ctx.fillStyle = "rgba(5, 8, 14, 0.82)";
+      ctx.fillRect(textX - textW / 2 - 4, textY - 7, textW + 8, 14);
+
+      ctx.fillStyle = isActive ? "#00F0FF" : isTorqued ? "#10B981" : "rgba(220, 230, 242, 0.9)";
+      ctx.fillText(textStr, textX, textY);
+      ctx.restore();
     }
     ctx.restore();
   }
@@ -517,12 +534,13 @@ requestAnimationFrame(renderLoop);
 function syncUI() {
   const snap = engine.getSnapshot();
 
-  // Pass banner
+  // Pass banner (Hide during error so it never collides with warp banner)
   const bannerHud = document.getElementById("passBannerHud");
   const bannerHeader = document.getElementById("passBannerHeader");
+  const isWarp = snap.status === "WARP_REJECTED";
   if (bannerHud && bannerHeader) {
     bannerHeader.textContent = snap.bannerText;
-    bannerHud.style.display = snap.focusMode || snap.isComplete ? "none" : "block";
+    bannerHud.style.display = snap.focusMode || snap.isComplete || isWarp ? "none" : "block";
   }
 
   // Verdict Tag & Warp Banner
@@ -535,7 +553,7 @@ function syncUI() {
   if (verdictText && verdictTagHud && verdictIcon) {
     verdictText.textContent = snap.verdictText;
     verdictTagHud.className = "crosstorque-verdict-pill";
-    if (snap.status === "WARP_REJECTED") {
+    if (isWarp) {
       verdictTagHud.classList.add("danger");
       verdictIcon.textContent = "⚠️";
       if (warpBanner && warpBannerText) {
@@ -568,7 +586,7 @@ function syncUI() {
       node.className = "star-node-5";
       const bObj = allBolts.find((b) => b.id === bId);
       const isDone = bObj && bObj.appliedTorqueNm >= snap.targetTorqueNm;
-      if (snap.status === "WARP_REJECTED" && activeId === bId) {
+      if (isWarp && snap.attemptedBoltId === bId) {
         node.classList.add("error");
       } else if (activeId === bId && !snap.isComplete) {
         node.classList.add("active");

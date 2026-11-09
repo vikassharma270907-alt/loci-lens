@@ -66,7 +66,9 @@
 }
 
 /* Base Reset & Typography */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
@@ -91,13 +93,16 @@ body {
   width: 6px;
   height: 6px;
 }
+
 ::-webkit-scrollbar-track {
   background: rgba(10, 12, 16, 0.8);
 }
+
 ::-webkit-scrollbar-thumb {
   background: rgba(255, 255, 255, 0.15);
   border-radius: var(--radius-full);
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 240, 255, 0.4);
 }
@@ -122,7 +127,7 @@ body {
   content: "";
   position: absolute;
   inset: 0;
-  background-image: 
+  background-image:
     linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   background-size: 32px 32px;
@@ -152,7 +157,7 @@ canvas#renderCanvas:active {
   border: 1.5px solid rgba(255, 255, 255, 0.14);
   border-radius: 44px;
   pointer-events: none;
-  box-shadow: 
+  box-shadow:
     0 0 0 9999px var(--specs-fov-mask),
     0 0 40px rgba(0, 240, 255, 0.08) inset,
     0 0 80px rgba(0, 0, 0, 0.9) inset;
@@ -287,16 +292,16 @@ canvas#renderCanvas:active {
 /* Bottom Viewport Quick Interaction Hint */
 .viewport-quick-hint {
   position: absolute;
-  bottom: 10px;
+  bottom: 8px;
   left: 50%;
   transform: translateX(-50%);
-  font-size: 10px;
+  font-size: 9.5px;
   font-family: -apple-system, BlinkMacSystemFont, sans-serif;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   color: var(--text-muted);
   background: rgba(8, 11, 18, 0.9);
   backdrop-filter: blur(12px);
-  padding: 3px 14px;
+  padding: 2px 12px;
   border-radius: var(--radius-full);
   border: 1px solid rgba(255, 255, 255, 0.09);
   pointer-events: none;
@@ -344,8 +349,17 @@ canvas#renderCanvas:active {
 }
 
 @keyframes pulse-beacon {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.35); opacity: 0.6; }
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.35);
+    opacity: 0.6;
+  }
 }
 
 .disclaimer-banner {
@@ -390,29 +404,36 @@ canvas#renderCanvas:active {
 
 .peripheral-warp-banner {
   position: absolute;
-  top: 66px;
+  top: 72px;
   left: 50%;
   transform: translateX(-50%);
   background: linear-gradient(135deg, rgba(239, 68, 68, 0.95), rgba(185, 28, 28, 0.95));
   backdrop-filter: blur(12px);
   color: #ffffff;
-  padding: 10px 22px;
+  padding: 7px 20px;
   border-radius: var(--radius-md);
   border: 1.5px solid #fca5a5;
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 800;
-  letter-spacing: 1.2px;
+  letter-spacing: 1px;
   display: none;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   box-shadow: 0 0 35px rgba(239, 68, 68, 0.65), 0 8px 24px rgba(0, 0, 0, 0.6);
   animation: pulse-warp 0.7s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
-  z-index: 20;
+  z-index: 95;
 }
 
 @keyframes pulse-warp {
-  0% { transform: translateX(-50%) scale(0.97); box-shadow: 0 0 20px rgba(239, 68, 68, 0.4); }
-  100% { transform: translateX(-50%) scale(1.03); box-shadow: 0 0 45px rgba(239, 68, 68, 0.85); }
+  0% {
+    transform: translateX(-50%) scale(0.97);
+    box-shadow: 0 0 20px rgba(239, 68, 68, 0.4);
+  }
+
+  100% {
+    transform: translateX(-50%) scale(1.03);
+    box-shadow: 0 0 45px rgba(239, 68, 68, 0.85);
+  }
 }
 
 /* ==========================================================================
@@ -483,8 +504,15 @@ canvas#renderCanvas:active {
 }
 
 @keyframes float-chevron {
-  0%, 100% { transform: translateX(-50%) translateY(0); }
-  50% { transform: translateX(-50%) translateY(-10px); }
+
+  0%,
+  100% {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  50% {
+    transform: translateX(-50%) translateY(-10px);
+  }
 }
 
 /* ==========================================================================
@@ -706,8 +734,13 @@ h2 {
 }
 
 @keyframes rotate-gear {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .panel-sub {
@@ -773,13 +806,31 @@ h2 {
   border-radius: 1px;
 }
 
-.eq-bar:nth-child(1) { height: 4px; animation: eq 0.8s infinite ease-in-out; }
-.eq-bar:nth-child(2) { height: 9px; animation: eq 0.6s infinite ease-in-out 0.2s; }
-.eq-bar:nth-child(3) { height: 6px; animation: eq 0.7s infinite ease-in-out 0.4s; }
+.eq-bar:nth-child(1) {
+  height: 4px;
+  animation: eq 0.8s infinite ease-in-out;
+}
+
+.eq-bar:nth-child(2) {
+  height: 9px;
+  animation: eq 0.6s infinite ease-in-out 0.2s;
+}
+
+.eq-bar:nth-child(3) {
+  height: 6px;
+  animation: eq 0.7s infinite ease-in-out 0.4s;
+}
 
 @keyframes eq {
-  0%, 100% { height: 3px; }
-  50% { height: 10px; }
+
+  0%,
+  100% {
+    height: 3px;
+  }
+
+  50% {
+    height: 10px;
+  }
 }
 
 .muted .eq-bar {
@@ -997,8 +1048,15 @@ button.mode-btn.active .key-badge {
 }
 
 @keyframes pulse-active-node {
-  0% { transform: scale(1); box-shadow: 0 0 12px rgba(0, 240, 255, 0.5); }
-  100% { transform: scale(1.16); box-shadow: 0 0 24px rgba(0, 240, 255, 0.95); }
+  0% {
+    transform: scale(1);
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+  }
+
+  100% {
+    transform: scale(1.16);
+    box-shadow: 0 0 24px rgba(0, 240, 255, 0.95);
+  }
 }
 
 .star-node.warped .star-node-chip {
@@ -1016,7 +1074,7 @@ button.mode-btn.active .key-badge {
   transition: color var(--transition-fast);
 }
 
-.star-node.active ~ .star-node-arrow {
+.star-node.active~.star-node-arrow {
   color: rgba(255, 255, 255, 0.15);
 }
 
@@ -1313,9 +1371,20 @@ button.mode-btn.active .key-badge {
   background: rgba(255, 255, 255, 0.2);
 }
 
-.terminal-dot:nth-child(1) { background: #ef4444; box-shadow: 0 0 6px rgba(239, 68, 68, 0.5); }
-.terminal-dot:nth-child(2) { background: #f59e0b; box-shadow: 0 0 6px rgba(245, 158, 11, 0.5); }
-.terminal-dot:nth-child(3) { background: #10b981; box-shadow: 0 0 6px rgba(16, 185, 129, 0.5); }
+.terminal-dot:nth-child(1) {
+  background: #ef4444;
+  box-shadow: 0 0 6px rgba(239, 68, 68, 0.5);
+}
+
+.terminal-dot:nth-child(2) {
+  background: #f59e0b;
+  box-shadow: 0 0 6px rgba(245, 158, 11, 0.5);
+}
+
+.terminal-dot:nth-child(3) {
+  background: #10b981;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
 
 #run-leaf-btn {
   background: linear-gradient(135deg, #0284c7, #0369a1);
@@ -1452,10 +1521,12 @@ kbd {
     overflow-y: auto;
     height: auto;
   }
+
   #viewport-container {
     height: 60vh;
     min-height: 480px;
   }
+
   #control-panel {
     width: 100%;
     height: auto;
@@ -1488,8 +1559,15 @@ kbd {
 }
 
 @keyframes pulseEdge {
-  from { transform: translateY(-50%) scale(0.96); opacity: 0.85; }
-  to { transform: translateY(-50%) scale(1.05); opacity: 1.0; }
+  from {
+    transform: translateY(-50%) scale(0.96);
+    opacity: 0.85;
+  }
+
+  to {
+    transform: translateY(-50%) scale(1.05);
+    opacity: 1.0;
+  }
 }
 
 .proximity-indicator {
@@ -1640,18 +1718,18 @@ input[type="range"]#cameraYawSlider::-webkit-slider-thumb:hover {
 .clear-zone-indicator {
   position: absolute;
   left: 50%;
-  top: 42%;
+  top: 27%;
   transform: translate(-50%, -50%);
-  width: 380px;
-  height: 80px;
-  border: 1.5px dashed rgba(255, 255, 255, 0.18);
+  width: 360px;
+  height: 46px;
+  border: 1px dashed rgba(255, 255, 255, 0.14);
   border-radius: 8px;
   pointer-events: none;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: rgba(255, 255, 255, 0.3);
-  font-size: 10px;
+  color: rgba(255, 255, 255, 0.22);
+  font-size: 9.5px;
   font-family: "JetBrains Mono", monospace;
   letter-spacing: 2px;
   text-transform: uppercase;
@@ -1717,22 +1795,22 @@ input[type="range"]#cameraYawSlider::-webkit-slider-thumb:hover {
 
 .crosstorque-verdict-pill {
   position: absolute;
-  bottom: 78px;
+  bottom: 72px;
   left: 50%;
   transform: translateX(-50%);
   width: auto;
-  min-width: 320px;
-  max-width: 500px;
-  height: 32px;
-  padding: 0 18px;
+  min-width: 300px;
+  max-width: 480px;
+  height: 30px;
+  padding: 0 16px;
   border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 10.5px;
   font-weight: 700;
-  letter-spacing: 0.6px;
+  letter-spacing: 0.5px;
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
   z-index: 85;
@@ -1765,25 +1843,25 @@ input[type="range"]#cameraYawSlider::-webkit-slider-thumb:hover {
 /* Ergonomic SIK Control Dock in Viewport */
 .viewport-dock-controls {
   position: absolute;
-  bottom: 38px;
+  bottom: 34px;
   left: 50%;
   transform: translateX(-50%);
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   z-index: 92;
 }
 
 .btn-dock {
-  min-width: 125px;
-  height: 32px;
-  padding: 0 12px;
-  font-size: 11px;
+  min-width: 98px;
+  height: 30px;
+  padding: 0 10px;
+  font-size: 10px;
   font-weight: 700;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   border-radius: var(--radius-sm);
   background: rgba(0, 240, 255, 0.14);
   border: 1px solid rgba(0, 240, 255, 0.45);
@@ -1919,4 +1997,3 @@ input[type="range"]#cameraYawSlider::-webkit-slider-thumb:hover {
   background: var(--accent-emerald);
   box-shadow: 0 0 6px var(--accent-emerald);
 }
-

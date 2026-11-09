@@ -22,6 +22,14 @@
       "destination": "/preview-runner.js"
     },
     {
+      "source": "/crosstorque-runner.js",
+      "destination": "/crosstorque-runner.js"
+    },
+    {
+      "source": "/crosstorque",
+      "destination": "/crosstorque.html"
+    },
+    {
       "source": "/",
       "destination": "/index.html"
     }
