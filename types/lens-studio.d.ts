@@ -50,6 +50,7 @@ declare class SceneObject {
 }
 
 declare class BaseScriptComponent {
+  static getTypeName(): string;
   getSceneObject(): SceneObject;
   getTransform(): Transform;
   enabled: boolean;
