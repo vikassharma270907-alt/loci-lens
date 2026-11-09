@@ -287,7 +287,7 @@ canvas#renderCanvas:active {
 /* Bottom Viewport Quick Interaction Hint */
 .viewport-quick-hint {
   position: absolute;
-  bottom: 22px;
+  bottom: 10px;
   left: 50%;
   transform: translateX(-50%);
   font-size: 10px;
@@ -296,11 +296,11 @@ canvas#renderCanvas:active {
   color: var(--text-muted);
   background: rgba(8, 11, 18, 0.9);
   backdrop-filter: blur(12px);
-  padding: 6px 18px;
+  padding: 3px 14px;
   border-radius: var(--radius-full);
   border: 1px solid rgba(255, 255, 255, 0.09);
   pointer-events: none;
-  z-index: 10;
+  z-index: 80;
   white-space: nowrap;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.6);
 }
@@ -1709,5 +1709,214 @@ input[type="range"]#cameraYawSlider::-webkit-slider-thumb:hover {
   color: var(--text-secondary);
   text-transform: uppercase;
   letter-spacing: 0.5px;
+}
+
+/* ==========================================================================
+   CrossTorque Dedicated HUD & Viewport Components
+   ========================================================================== */
+
+.crosstorque-verdict-pill {
+  position: absolute;
+  bottom: 78px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: auto;
+  min-width: 320px;
+  max-width: 500px;
+  height: 32px;
+  padding: 0 18px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  z-index: 85;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  pointer-events: none;
+}
+
+.crosstorque-verdict-pill.nominal {
+  background: rgba(10, 15, 24, 0.92);
+  border: 1.5px solid rgba(16, 185, 129, 0.7);
+  color: #10B981;
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.25), 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.crosstorque-verdict-pill.warning {
+  background: rgba(24, 18, 10, 0.94);
+  border: 1.5px solid rgba(245, 158, 11, 0.75);
+  color: #F59E0B;
+  box-shadow: 0 0 24px rgba(245, 158, 11, 0.35), 0 4px 16px rgba(0, 0, 0, 0.5);
+}
+
+.crosstorque-verdict-pill.danger {
+  background: rgba(30, 10, 14, 0.96);
+  border: 1.5px solid rgba(239, 68, 68, 0.85);
+  color: #EF4444;
+  box-shadow: 0 0 30px rgba(239, 68, 68, 0.6), 0 4px 16px rgba(0, 0, 0, 0.6);
+  animation: pulse-warp 0.7s infinite alternate cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Ergonomic SIK Control Dock in Viewport */
+.viewport-dock-controls {
+  position: absolute;
+  bottom: 38px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 92;
+}
+
+.btn-dock {
+  min-width: 125px;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 11px;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 240, 255, 0.14);
+  border: 1px solid rgba(0, 240, 255, 0.45);
+  color: var(--accent-cyan);
+  cursor: pointer;
+  transition: var(--transition-fast);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+}
+
+.btn-dock:hover {
+  background: rgba(0, 240, 255, 0.25);
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.45);
+  transform: translateY(-1.5px);
+}
+
+.btn-dock:active {
+  transform: translateY(0.5px);
+}
+
+.btn-dock kbd {
+  font-size: 9px;
+  font-family: monospace;
+  background: rgba(255, 255, 255, 0.14);
+  padding: 2px 5px;
+  border-radius: 3px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: var(--text-pure);
+}
+
+.btn-dock-warn {
+  background: rgba(245, 158, 11, 0.14);
+  border-color: rgba(245, 158, 11, 0.45);
+  color: var(--accent-amber);
+}
+
+.btn-dock-warn:hover {
+  background: rgba(245, 158, 11, 0.25);
+  border-color: var(--accent-amber);
+  box-shadow: 0 0 16px rgba(245, 158, 11, 0.4);
+}
+
+.btn-dock-ghost {
+  background: rgba(255, 255, 255, 0.08);
+  border-color: rgba(255, 255, 255, 0.22);
+  color: var(--text-pure);
+}
+
+.btn-dock-ghost:hover {
+  background: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.4);
+}
+
+.btn-dock-prox {
+  background: rgba(99, 102, 241, 0.18);
+  border-color: rgba(99, 102, 241, 0.5);
+  color: #a5b4fc;
+}
+
+.btn-dock-prox:hover {
+  background: rgba(99, 102, 241, 0.3);
+  border-color: #818cf8;
+  box-shadow: 0 0 16px rgba(99, 102, 241, 0.4);
+}
+
+/* 5-Bolt Star Progress Flow in CrossTorque */
+.star-nodes-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 12px 0 6px 0;
+  position: relative;
+}
+
+.star-node-5 {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(14, 18, 28, 0.9);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-secondary);
+  position: relative;
+  transition: all 0.25s ease;
+}
+
+.star-node-5 .node-step {
+  font-size: 8px;
+  color: var(--text-muted);
+  line-height: 1;
+  margin-top: 1px;
+}
+
+.star-node-5.active {
+  border-color: var(--accent-cyan);
+  color: var(--accent-cyan);
+  box-shadow: 0 0 16px rgba(0, 240, 255, 0.5);
+  transform: scale(1.1);
+  background: rgba(0, 240, 255, 0.15);
+}
+
+.star-node-5.completed {
+  border-color: var(--accent-emerald);
+  color: var(--accent-emerald);
+  background: rgba(16, 185, 129, 0.15);
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+.star-node-5.error {
+  border-color: var(--accent-coral);
+  color: var(--accent-coral);
+  background: rgba(239, 68, 68, 0.18);
+  box-shadow: 0 0 14px rgba(239, 68, 68, 0.5);
+  animation: shake-bolt 0.4s ease-in-out;
+}
+
+.star-flow-connector {
+  flex: 1;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.08);
+  margin: 0 4px;
+  position: relative;
+}
+
+.star-flow-connector.filled {
+  background: var(--accent-emerald);
+  box-shadow: 0 0 6px var(--accent-emerald);
 }
 

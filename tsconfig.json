@@ -1,7 +1,6 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "experimentalDecorators": true,
     "isolatedModules": true,
     "lib": [
       "es2021"
@@ -23,7 +22,9 @@
     "node_modules/typescript/lib/lib.dom.d.ts"
   ],
   "include": [
-    "./types/**/*.d.ts",
-    "./Assets/**/*.ts"
+    "./Cache/TypeScript/lib/LensifyTS/Declarations/**/*.d.ts",
+    "./Assets/**/*.ts",
+    "./Packages/**/*.ts",
+    "./Cache/TypeScript/Src/Packages/**/*.ts"
   ]
 }

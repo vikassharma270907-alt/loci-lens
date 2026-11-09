@@ -142,10 +142,15 @@
         <span class="live-beacon"></span>
         Snap SPECS 27 Preview · 1:1 Scale @ Z = -110 cm
       </div>
-      <div class="disclaimer-banner">PREVIEW STAND-IN: 15×7.5cm SIK DOCK BUTTONS & PINCHABLE BOLTS</div>
-      <div class="safety-banner">
+      <div class="safety-banner" style="top: 50px; bottom: auto;">
         <span>⚙️</span> ASME PCC-1 & SAE 5-BOLT STAR SEQUENCE (1-3-5-2-4)
       </div>
+    </div>
+
+    <!-- Out-of-Sequence Warp Alert Banner (Gruenefeld et al. SUI 2017) -->
+    <div class="peripheral-warp-banner" id="warp-banner" style="display:none;">
+      <span style="font-size:16px;">⚠️</span>
+      <span id="warp-banner-text">!! SEQUENCE ERROR: ADJACENT BOLT MISMATCH !!</span>
     </div>
 
     <!-- Eye-Level Clear Zone (Y = 0 cm) -->
@@ -164,10 +169,10 @@
       LOOK RIGHT &gt;&gt; BOLT #3
     </div>
 
-    <!-- Verdict / Warp Callout (Y = -22.5 cm, Z = -108 cm) -->
-    <div class="peripheral-warp-banner" id="verdictTagHud" style="bottom: 120px; left: 50%; transform: translateX(-50%); width: 420px; display: flex;">
-      <span style="font-size:16px;" id="verdictIcon">✓</span>
-      <span id="verdictText" style="font-size:12px; font-weight:600;">NOMINAL · RUNOUT 0.02 mm · TORQUE BOLT #1 (35 Nm)</span>
+    <!-- Real-time Status / Verdict HUD Pill (Y = -22.5 cm, Z = -108 cm) -->
+    <div class="crosstorque-verdict-pill nominal" id="verdictTagHud">
+      <span style="font-size:14px;" id="verdictIcon">✓</span>
+      <span id="verdictText">NOMINAL · RUNOUT 0.02 mm · TORQUE BOLT #1 (35 Nm)</span>
     </div>
 
     <!-- Debrief Modal Card (Hidden until all 15 steps finish) -->
@@ -196,25 +201,30 @@
     </div>
 
     <!-- Lower-Field Ergonomic SIK Control Dock (Y = -29 cm, Z = -95 cm) -->
-    <div style="position:absolute; bottom:25px; left:50%; transform:translateX(-50%); display:flex; gap:16px; z-index:90;">
-      <button class="primary-btn" id="btnTorquePulse" onclick="window.ctHandleTorquePulse()" style="min-width:140px; padding:10px 14px; font-size:11px; background:rgba(0,240,255,0.18); border:1px solid #00F0FF; color:#00F0FF;">
-        [TORQUE NEXT BOLT]
+    <div class="viewport-dock-controls">
+      <button class="primary-btn btn-dock" id="btnTorquePulse" onclick="window.ctHandleTorquePulse()" title="Apply Torque (Space)">
+        <span>⚡ Apply Torque</span>
+        <kbd>Space</kbd>
       </button>
-      <button class="primary-btn" id="btnWrongBolt" onclick="window.ctHandleWrongBolt()" style="min-width:140px; padding:10px 14px; font-size:11px; background:rgba(255,180,50,0.18); border:1px solid #FFB432; color:#FFB432;">
-        [SIMULATE WRONG BOLT]
+      <button class="primary-btn btn-dock btn-dock-warn" id="btnWrongBolt" onclick="window.ctHandleWrongBolt()" title="Simulate Wrong Bolt (X)">
+        <span>⚠️ Wrong Bolt</span>
+        <kbd>X</kbd>
       </button>
-      <button class="primary-btn" id="btnFocusReset" onclick="window.ctHandleFocusReset()" style="min-width:140px; padding:10px 14px; font-size:11px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.3); color:#fff;">
-        [FOCUS MODE / RESET]
+      <button class="primary-btn btn-dock btn-dock-ghost" id="btnFocusReset" onclick="window.ctHandleFocusReset()" title="Focus Mode / Reset (F)">
+        <span id="btnFocusResetLabel">👁️ Focus Mode</span>
+        <kbd>F</kbd>
       </button>
-      <button class="primary-btn btn-prox-mode" id="btnProximityLOD" onclick="window.ctToggleProximityLOD()" style="min-width:140px; padding:10px 14px; font-size:11px; background:rgba(99,102,241,0.22); border:1px solid #818cf8; color:#a5b4fc;">
-        [PROXIMITY LOD]
+      <button class="primary-btn btn-dock btn-dock-prox" id="btnProximityLOD" onclick="window.ctToggleProximityLOD()" title="Toggle Proximity LOD (Henderson &amp; Feiner)">
+        <span>🎯 Proximity LOD</span>
       </button>
     </div>
+
     <!-- Proximity Tool Alignment Indicator (Henderson & Feiner Phase Shifter) -->
     <div class="proximity-indicator" id="proximity-indicator">⚡ PROXIMITY ENGAGED · 1:1 SOCKET SEATED</div>
+
     <!-- Viewport Quick Controls Hint -->
     <div class="viewport-quick-hint">
-      <span>[Space] Torque Next Bolt</span> · <span>[Pinch] 3D Bolt Select</span> · <span>[Slider] Camera Yaw</span>
+      <span><kbd>Space</kbd> Advance Bolt</span> · <span><kbd>Click</kbd> 3D Bolt Pinch</span> · <span><kbd>Slider</kbd> Camera Yaw</span> · <span><kbd>M</kbd> Mute Audio</span>
     </div>
   </div>
 
@@ -246,6 +256,34 @@
       <a href="crosstorque.html" class="sim-tab active">
         <span>⚡ CrossTorque (5-Bolt)</span>
       </a>
+    </div>
+
+    <!-- Connection & Standard Badge -->
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
+      <span class="specs-connection-pill">
+        <span class="live-beacon"></span>
+        SPECS OPTICAL LINK LIVE
+      </span>
+      <span style="font-size:10px; color:#64748b; font-family:monospace;">ASME PCC-1 &amp; SAE STAR</span>
+    </div>
+
+    <!-- Star Sequence Progress (1-3-5-2-4 Star Flow) -->
+    <div class="section-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+        <div class="section-card-title" style="margin-bottom:0;">STAR SEQUENCE PROGRESS (ASME PCC-1)</div>
+        <span id="starPassBadge" style="font-size:10px; color:var(--accent-cyan); font-weight:700;">PASS 1 · SNUG</span>
+      </div>
+      <div class="star-nodes-row">
+        <div class="star-node-5 active" id="starNode1"><span class="node-id">#1</span><span class="node-step">1st</span></div>
+        <div class="star-flow-connector" id="starConn1"></div>
+        <div class="star-node-5" id="starNode3"><span class="node-id">#3</span><span class="node-step">2nd</span></div>
+        <div class="star-flow-connector" id="starConn2"></div>
+        <div class="star-node-5" id="starNode5"><span class="node-id">#5</span><span class="node-step">3rd</span></div>
+        <div class="star-flow-connector" id="starConn3"></div>
+        <div class="star-node-5" id="starNode2"><span class="node-id">#2</span><span class="node-step">4th</span></div>
+        <div class="star-flow-connector" id="starConn4"></div>
+        <div class="star-node-5" id="starNode4"><span class="node-id">#4</span><span class="node-step">5th</span></div>
+      </div>
     </div>
 
     <!-- Gaze & Preview Controls -->
@@ -288,6 +326,46 @@
           <div style="font-size:10px; color:var(--text-muted);">MISTAKES LOGGED</div>
           <div id="telemetryErrors" style="font-size:13px; font-weight:700; color:var(--text-pure);">0</div>
         </div>
+      </div>
+
+      <!-- FEA Runout & Gasket Gauge -->
+      <div style="margin-top:10px;">
+        <div style="display:flex; justify-content:space-between; font-size:11px; margin-bottom:4px;">
+          <span style="color:var(--text-secondary); font-weight:600;">FEA Runout &amp; Warp Strain</span>
+          <span id="flangeRunoutText" style="color:#10B981; font-weight:700; font-family:monospace;">0.02 mm (Nominal)</span>
+        </div>
+        <div style="height:6px; background:rgba(255,255,255,0.06); border-radius:3px; overflow:hidden; position:relative;">
+          <div id="flangeRunoutBar" style="height:100%; width:15%; background:linear-gradient(90deg, #10b981 0%, #00f0ff 100%); transition:all 0.3s ease;"></div>
+        </div>
+        <div style="display:flex; justify-content:space-between; font-size:9px; color:var(--text-muted); margin-top:2px;">
+          <span>0.0 mm</span>
+          <span style="color:var(--accent-amber);">ASME Max: 0.05 mm</span>
+          <span>0.25 mm</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- SIK Interaction Controls (Lower Dock Emulation) -->
+    <div class="panel-section">
+      <h3>Lower-Field Sim Dock (SIK Controls)</h3>
+      <div class="action-btn-group">
+        <button class="btn-apply-torque" onclick="window.ctHandleTorquePulse()">
+          <span>⚡ Apply Torque (Advance Star Bolt)</span>
+          <kbd>Space</kbd>
+        </button>
+        <div class="secondary-btn-row">
+          <button class="btn-sim-error" onclick="window.ctHandleWrongBolt()">
+            <span>⚠️ Sim Wrong Bolt</span>
+            <kbd>X</kbd>
+          </button>
+          <button class="btn-focus-mode" onclick="window.ctHandleFocusReset()">
+            <span id="sideBtnFocusResetLabel">👁️ Focus Mode</span>
+            <kbd>F</kbd>
+          </button>
+        </div>
+        <button class="btn-reset" onclick="window.ctToggleProximityLOD()" style="margin-top:6px; background:rgba(99,102,241,0.15); border:1px solid rgba(99,102,241,0.4); color:#a5b4fc;">
+          <span>🎯 Toggle Proximity LOD</span>
+        </button>
       </div>
     </div>
 

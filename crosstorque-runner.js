@@ -525,30 +525,80 @@ function syncUI() {
     bannerHud.style.display = snap.focusMode || snap.isComplete ? "none" : "block";
   }
 
-  // Verdict Tag
+  // Verdict Tag & Warp Banner
   const verdictText = document.getElementById("verdictText");
   const verdictTagHud = document.getElementById("verdictTagHud");
   const verdictIcon = document.getElementById("verdictIcon");
+  const warpBanner = document.getElementById("warp-banner");
+  const warpBannerText = document.getElementById("warp-banner-text");
+
   if (verdictText && verdictTagHud && verdictIcon) {
     verdictText.textContent = snap.verdictText;
+    verdictTagHud.className = "crosstorque-verdict-pill";
     if (snap.status === "WARP_REJECTED") {
-      verdictTagHud.style.borderColor = "#EF4444";
-      verdictTagHud.style.color = "#EF4444";
+      verdictTagHud.classList.add("danger");
       verdictIcon.textContent = "⚠️";
+      if (warpBanner && warpBannerText) {
+        warpBanner.style.display = "flex";
+        warpBannerText.textContent = `!! SEQUENCE ERROR: BOLT MISMATCH (+${snap.flangeWarpMm.toFixed(2)} mm WARP) !!`;
+      }
     } else if (snap.status === "CREEP_ALERT") {
-      verdictTagHud.style.borderColor = "#F59E0B";
-      verdictTagHud.style.color = "#F59E0B";
+      verdictTagHud.classList.add("warning");
       verdictIcon.textContent = "⚡";
+      if (warpBanner) warpBanner.style.display = "none";
     } else {
-      verdictTagHud.style.borderColor = "#10B981";
-      verdictTagHud.style.color = "#10B981";
+      verdictTagHud.classList.add("nominal");
       verdictIcon.textContent = "✓";
+      if (warpBanner) warpBanner.style.display = "none";
     }
   }
 
-  // Focus / Reset button text
+  // Star Sequence Progress Nodes (1 -> 3 -> 5 -> 2 -> 4)
+  const starPassBadge = document.getElementById("starPassBadge");
+  if (starPassBadge) {
+    const passNames = { 1: "PASS 1 · SNUG (35 Nm)", 2: "PASS 2 · INTERMEDIATE (75 Nm)", 3: "PASS 3 · FINAL (110 Nm)" };
+    starPassBadge.textContent = snap.isComplete ? "COMPLETED · 15/15 STEPS" : passNames[snap.currentPass] || `PASS ${snap.currentPass}`;
+  }
+  const starSeq = [1, 3, 5, 2, 4];
+  const activeId = snap.targetBoltId;
+  const allBolts = engine.getBolts();
+  starSeq.forEach((bId, idx) => {
+    const node = document.getElementById(`starNode${bId}`);
+    if (node) {
+      node.className = "star-node-5";
+      const bObj = allBolts.find((b) => b.id === bId);
+      const isDone = bObj && bObj.appliedTorqueNm >= snap.targetTorqueNm;
+      if (snap.status === "WARP_REJECTED" && activeId === bId) {
+        node.classList.add("error");
+      } else if (activeId === bId && !snap.isComplete) {
+        node.classList.add("active");
+      } else if (isDone || snap.isComplete) {
+        node.classList.add("completed");
+      }
+    }
+    if (idx < 4) {
+      const conn = document.getElementById(`starConn${idx + 1}`);
+      if (conn) {
+        conn.className = "star-flow-connector";
+        if (idx < snap.sequenceCursor || snap.isComplete) {
+          conn.classList.add("filled");
+        }
+      }
+    }
+  });
+
+  // Focus / Reset button text (both viewport and sidebar)
   const btnFocusReset = document.getElementById("btnFocusReset");
-  if (btnFocusReset) {
+  const btnFocusResetLabel = document.getElementById("btnFocusResetLabel");
+  const sideBtnFocusResetLabel = document.getElementById("sideBtnFocusResetLabel");
+  const focusLabelText = snap.isComplete
+    ? "🔄 Reset 3-Pass Hub"
+    : snap.focusMode
+    ? "👁️ Exit Focus Mode"
+    : "👁️ Focus Mode";
+  if (btnFocusResetLabel) btnFocusResetLabel.textContent = focusLabelText;
+  if (sideBtnFocusResetLabel) sideBtnFocusResetLabel.textContent = focusLabelText;
+  if (btnFocusReset && !btnFocusResetLabel) {
     btnFocusReset.textContent = snap.isComplete
       ? "[RESET 3-PASS HUB]"
       : snap.focusMode
@@ -575,6 +625,24 @@ function syncUI() {
   if (tTarget) tTarget.textContent = snap.targetBoltId > 0 ? `Bolt #${snap.targetBoltId}` : "All Locked";
   if (tRunout) tRunout.textContent = `${snap.flangeWarpMm.toFixed(2)} mm`;
   if (tErrors) tErrors.textContent = `${snap.mistakeCount}`;
+
+  // Runout & Warp Strain Gauge Bar
+  const flangeRunoutText = document.getElementById("flangeRunoutText");
+  const flangeRunoutBar = document.getElementById("flangeRunoutBar");
+  if (flangeRunoutText && flangeRunoutBar) {
+    const isWarped = snap.flangeWarpMm > 0.05;
+    const barPct = Math.min(100, Math.max(10, (snap.flangeWarpMm / 0.15) * 100));
+    flangeRunoutBar.style.width = `${barPct}%`;
+    if (isWarped) {
+      flangeRunoutText.textContent = `${snap.flangeWarpMm.toFixed(2)} mm (WARP ALERT)`;
+      flangeRunoutText.style.color = "#EF4444";
+      flangeRunoutBar.style.background = "linear-gradient(90deg, #f59e0b 0%, #ef4444 100%)";
+    } else {
+      flangeRunoutText.textContent = `${snap.flangeWarpMm.toFixed(2)} mm (Nominal)`;
+      flangeRunoutText.style.color = "#10B981";
+      flangeRunoutBar.style.background = "linear-gradient(90deg, #10b981 0%, #00f0ff 100%)";
+    }
+  }
 
   // Update out-of-FOV Edge Arrow
   updateEdgeArrow();
