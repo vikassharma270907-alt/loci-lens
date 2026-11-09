@@ -12,6 +12,7 @@ permissions:
 
 jobs:
   test:
+    name: test (${{ matrix.os }}, ${{ matrix.node-version }})
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
@@ -35,7 +36,7 @@ jobs:
         run: npm run typecheck
 
       - name: Verify preview assets
-        run: node scripts/verify-assets.cjs
+        run: npm run verify
 
       - name: Run acceptance tests
         run: npm test
