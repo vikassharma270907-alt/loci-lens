@@ -21,7 +21,6 @@ export class CrossTorqueController extends BaseScriptComponent {
   public static getTypeName(): string {
     return "CrossTorqueController";
   }
-
   @input
   @allowUndefined
   public headCamera?: SceneObject;
@@ -407,10 +406,8 @@ export class CrossTorqueController extends BaseScriptComponent {
     }
     txt.text = content;
     txt.size = size;
-    txt.textFill = {
-      mode: TextFillMode.Solid,
-      color: color,
-    };
+    txt.textFill.mode = TextFillMode.Solid;
+    txt.textFill.color = color;
     return txt;
   }
 
