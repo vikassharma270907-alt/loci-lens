@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Loci Lens — Snap SPECS Interactive Optical Preview Simulator</title>
+  <title>TorqueLock AR — Snap SPECS 27 Interactive Optical Preview Simulator</title>
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
@@ -12,97 +12,139 @@
 
     <!-- Simulated SPECS Optical Waveguide Display Frame (37° V x 32° H) -->
     <div class="specs-waveguide-frame">
-      <div class="specs-badge">Snap SPECS Waveguide FOV (37° V × 32° H)</div>
+      <div class="specs-badge">Snap SPECS 27 Waveguide FOV (37° V × 32° H)</div>
+      <div class="disclaimer-banner">PREVIEW STAND-IN: SIMULATED BLE TORQUE WRENCH</div>
+      <div class="safety-banner">SIMULATION MODE — NO REAL TORQUE MEASUREMENT</div>
     </div>
 
-    <!-- Peripheral HUD (Lower Right Margin, Lu et al. 2020) -->
-    <div class="peripheral-hud" id="peripheral-hud">
-      <div class="hud-ring-label">Progress</div>
-      <div class="hud-ring-val" id="hud-val">6</div>
-      <div class="hud-ring-sub" id="hud-sub">Deck Cards</div>
+    <!-- Out-of-Sequence Gasket Warp Banner (Gruenefeld et al. SUI 2017) -->
+    <div class="peripheral-warp-banner" id="warp-banner">
+      <span style="font-size:16px;">⚠️</span>
+      <span id="warp-banner-text">!! SEQUENCE ERROR: UNDO BOLT 2 (-35 Nm) !!</span>
+    </div>
+
+    <!-- Active Bolt Spec Tag HUD Overlay (Floating 11 cm above active bolt) -->
+    <div class="active-spec-tag-hud" id="spec-tag-hud">
+      <div class="tag-header" id="spec-tag-header">BOLT 1 OF 6 · PASS 1</div>
+      <div class="tag-body" id="spec-tag-body">TARGET: 35 Nm SNUG</div>
     </div>
 
     <!-- Out-of-View Directional Chevron Cue -->
     <div class="out-of-view-chevron" id="out-of-view-cue">➤</div>
+
+    <!-- Peripheral HUD (Lower Right Margin, Lu et al. 2020) -->
+    <div class="peripheral-hud" id="peripheral-hud">
+      <div class="hud-ring-label">Star Step</div>
+      <div class="hud-ring-val" id="hud-val">1/6</div>
+      <div class="hud-ring-sub" id="hud-sub">Pass 1 (35 Nm)</div>
+    </div>
   </div>
 
   <!-- Sidebar Diagnostic, State Controller & LEAF Runner -->
   <div id="control-panel">
     <h2>
-      <span style="color:#38bdf8;">✦</span> Loci Lens SPECS Simulator
+      <span style="color:#00F0FF;">⚙️</span> TorqueLock AR
     </h2>
-    <p style="font-size:12px; color:#94a3b8; margin-bottom:16px;">
-      Augmented Reality Memory Palace for Snap SPECS
+    <p style="font-size:12px; color:#94a3b8; margin-bottom:14px;">
+      Spatial Memory & Procedural Flange Torquing Coach
     </p>
 
     <!-- Mode Switcher -->
     <div class="panel-section">
-      <h3>Experience Mode</h3>
+      <h3>Experience Mode (Method of Loci)</h3>
       <div class="mode-btn-group">
-        <button class="mode-btn active" data-mode="onboard">1. Onboard</button>
-        <button class="mode-btn" data-mode="place">2. Place</button>
-        <button class="mode-btn" data-mode="stroll">3. Stroll</button>
-        <button class="mode-btn" data-mode="test">4. Test</button>
-        <button class="mode-btn" data-mode="summary">5. Summary</button>
+        <button class="mode-btn active" id="btn-mode-learn" onclick="window.setMode('LEARN')">1. Learn</button>
+        <button class="mode-btn" id="btn-mode-recall" onclick="window.setMode('RECALL')">2. Recall</button>
+        <button class="mode-btn" id="btn-mode-practise" onclick="window.setMode('PRACTISE')">3. Practise</button>
+        <button class="mode-btn" id="btn-mode-summary" onclick="window.setMode('SUMMARY')">4. Summary</button>
       </div>
+    </div>
+
+    <!-- Current Step Instruction & Mnemonic Card -->
+    <div class="panel-section" id="mnemonic-card-section">
+      <h3 id="mnemonic-title">Stage A: Spatial Mnemonic Association</h3>
+      <div style="font-size:13px; font-weight:700; color:#00F0FF; margin-bottom:4px;" id="cue-headline">
+        Bolt 1: Initial Anchor (12 o'clock)
+      </div>
+      <p style="font-size:12px; color:#e2e8f0; margin-bottom:6px;" id="cue-mnemonic">
+        "Top Origin — Anchor the reference plane"
+      </p>
+      <p style="font-size:11px; color:#94a3b8;" id="cue-instruction">
+        Begin at the top 12 o'clock bolt. Tighten to initial snug target.
+      </p>
     </div>
 
     <!-- Live Telemetry -->
     <div class="panel-section">
-      <h3>Live Telemetry</h3>
+      <h3>Live Mechanical & Spatial Telemetry</h3>
       <div class="stat-row">
-        <span>Active State:</span>
-        <span class="val" id="stat-mode">ONBOARD</span>
+        <span>Active Experience:</span>
+        <span class="val" id="stat-mode" style="color:#00F0FF;">LEARN</span>
       </div>
       <div class="stat-row">
-        <span>Anchored Loci:</span>
-        <span class="val" id="stat-placed">0/6</span>
+        <span>Active Star Target:</span>
+        <span class="val" id="stat-target">Bolt 1 (12 o'clock)</span>
       </div>
       <div class="stat-row">
-        <span>Cards Tested:</span>
-        <span class="val" id="stat-tested">0/6</span>
+        <span>Training Pass:</span>
+        <span class="val" id="stat-pass">Pass 1 (35 Nm Snug)</span>
+      </div>
+      <div class="stat-row">
+        <span>Focus Mode (LOD):</span>
+        <span class="val" id="stat-lod">COMPREHENSION</span>
+      </div>
+      <div class="stat-row">
+        <span>Gasket Deflection:</span>
+        <span class="val" id="stat-warp" style="color:#4ADE80;">0.0 mm (Nominal)</span>
       </div>
       <div class="stat-row">
         <span>Recall Accuracy:</span>
-        <span class="val" id="stat-acc">0%</span>
-      </div>
-      <div class="stat-row">
-        <span>Optical Focal Plane:</span>
-        <span class="val">1.10 m (Sweet Spot)</span>
+        <span class="val" id="stat-acc">100% (6/6)</span>
       </div>
     </div>
 
-    <!-- Test Interaction Actions (for Test Mode) -->
+    <!-- SIK Interaction Controls (Lower Dock Emulation) -->
     <div class="panel-section">
-      <h3>Test Controls (SIK Emulation)</h3>
-      <div style="display:flex; gap:8px;">
-        <button class="mode-btn" style="flex:1; background:#15803d; border-color:#22c55e;" onclick="window.triggerGotIt()">
-          ✓ Mark Got It
+      <h3>Lower-Field Sim Dock (SIK Controls)</h3>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <button class="mode-btn" style="background:#0284c7; border-color:#00F0FF; font-weight:700;" onclick="window.triggerApplyTorque()">
+          ⚡ Apply Torque (Advance Star Bolt)
         </button>
-        <button class="mode-btn" style="flex:1; background:#b45309; border-color:#f59e0b;" onclick="window.triggerMissed()">
-          ✕ Mark Missed
+        <div style="display:flex; gap:8px;">
+          <button class="mode-btn" style="flex:1; background:#b45309; border-color:#FACC15;" onclick="window.triggerSimError()">
+            ⚠️ Sim Wrong Bolt
+          </button>
+          <button class="mode-btn" style="flex:1; background:#4338ca; border-color:#818cf8;" onclick="window.triggerFocusMode()">
+            👁️ Focus Mode
+          </button>
+        </div>
+        <button class="mode-btn" style="background:rgba(255,255,255,0.06); border-color:rgba(255,255,255,0.2);" onclick="window.triggerReset()">
+          ↺ Reset / Recover
         </button>
       </div>
+      <p style="font-size:10px; color:#64748b; margin-top:8px;">
+        💡 You can also left-click any of the 6 hexagonal bolt nodes directly in 3D perspective to simulate physical SIK pinch selection!
+      </p>
     </div>
 
     <!-- Automated LEAF Test Runner -->
     <div class="panel-section">
       <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px;">
-        <h3 style="margin-bottom:0;">Automated LEAF Harness</h3>
-        <button id="run-leaf-btn" style="background:#0284c7; color:#fff; border:none; padding:4px 8px; border-radius:4px; font-size:10px; cursor:pointer;">
-          Run LEAF
+        <h3 style="margin-bottom:0;">Automated LEAF Scenarios (C1–C6)</h3>
+        <button id="run-leaf-btn" style="background:#0284c7; color:#fff; border:none; padding:5px 10px; border-radius:4px; font-size:11px; font-weight:700; cursor:pointer;" onclick="window.runLeafHarness()">
+          Run LEAF Suite
         </button>
       </div>
-      <pre class="leaf-log" id="leaf-log">Ready. Click 'Run LEAF' to verify all 6 Done Criteria scenarios.</pre>
+      <pre class="leaf-log" id="leaf-log">Ready. Click 'Run LEAF Suite' to verify C1–C6 acceptance scenarios.</pre>
     </div>
 
     <!-- Navigation & Hotkey Guide -->
     <div class="panel-section instructions-card">
       <h3 style="color:#94a3b8;">Controls Guide</h3>
-      <p>• <strong>Primary Click</strong>: SIK Pinch (pin card, reveal answer, confirm).</p>
-      <p>• <strong>Mouse Drag</strong>: Look around 360° room.</p>
-      <p>• <strong>WASD / QE</strong>: Walk through room.</p>
-      <p>• <strong>Keys 1-5</strong>: Jump directly between modes.</p>
+      <p>• <strong>Left Click</strong> on 3D Bolt Node: SIK Pinch selection</p>
+      <p>• <strong>Right Drag</strong>: Orbit camera orientation</p>
+      <p>• <strong>WASD / QE</strong>: Move position in 3D centimeters</p>
+      <p>• <strong>1 / 2 / 3 / 4</strong>: Switch between Learn, Recall, Practise, Summary</p>
     </div>
   </div>
 

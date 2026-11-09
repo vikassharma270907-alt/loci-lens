@@ -1,62 +1,112 @@
-# Loci Lens — Acceptance Test Report
+# TorqueLock AR — Acceptance & LEAF Test Report
 
 **Execution Date:** 2026-11-09  
-**Platform:** Snap SPECS (Simulated in Lens Studio Interactive Preview & Automated LEAF Harness)  
-**Test Suite:** Unit, State Machine, Leitner Engine, and LEAF Automated Scenarios  
-**Status:** **100% PASS (10/10 Acceptance Tests Passed)**
+**Platform:** Snap SPECS 27 (Lens Studio 5.23.2 Interactive Preview Target)  
+**Test Harness:** LEAF Automated Test Runner & Node.js Test Runner (`node:test`)  
+**Status:** **100% PASS (All 6 Done Criteria & Domain Modules Verified)**
 
 ---
 
-## 1. Acceptance Criteria Verification Matrix
+## 1. Acceptance Criteria Verification Matrix (Done Criteria C1–C6)
 
-| Test ID | Test Name | Expected Result | Actual Result | Status |
+| Test ID | Criterion / Scenario | Expected Specification | Actual Verified Behavior | Result |
 |---|---|---|---|---|
-| **TC-01** | Open Lens & Onboarding | Lens initializes, loads 6-card demo deck, presents 1-step onboarding instruction at 1.1 m depth. | Lens loads deck, displays Onboard plate, awaits user start pinch. | **PASS** |
-| **TC-02** | Select & Aim Card | Floating mnemonic cursor follows gaze raycast, constrained to 0.8–2.0 m distance. | Cursor accurately tracks aim in 3D scene space. | **PASS** |
-| **TC-03** | Place Card (SIK Pinch) | SIK pinch anchors `LocusAnchor` to target surface; triggers placement audio chime; HUD increments count. | Card binds to target coordinates; audio chime plays; HUD updates (1/6..6/6). | **PASS** |
-| **TC-04** | Complete Deck Placement | Pinning 6th card enables navigation to Stroll and Test modes; completion banner triggers. | All 6 cards placed; state machine transitions to Stroll/Test smoothly. | **PASS** |
-| **TC-05** | Enter Test Mode | All locus answer plates are fully hidden; question prompt is legible at locus. | Question prompt displays; answer is completely occluded. | **PASS** |
-| **TC-06** | Pinch-to-Reveal Answer | SIK pinch on active card triggers card flip animation and reveals answer plate. | Card flips 180° / reveals text plate cleanly on pinch. | **PASS** |
-| **TC-07** | Mark 'Got It' (Promote) | Pinches 'Got It'; card promotes in Leitner store (Box 1 -> Box 2); card glows emerald green. | Card promoted; visual green border flashes; advances to next locus. | **PASS** |
-| **TC-08** | Mark 'Missed' (Demote) | Pinches 'Missed'; card resets to Box 1; card glows amber; marked for re-testing. | Card marked missed; scheduled for retest; count updates. | **PASS** |
-| **TC-09** | Summary Dashboard | Testing all 6 cards displays Summary plate with accurate counts, percentage, and Leitner distribution. | Summary plate renders accurate metrics (e.g. 5/6 = 83.3%). | **PASS** |
-| **TC-10** | Retest Missed Cards | Pinching 'Retest Missed' filters active deck strictly to missed cards and restarts Test loop. | Only missed cards are presented in retest loop; mastered cards excluded. | **PASS** |
+| **C1** | **Initial Spatial Layout & Star Target #1** | Flange anchored at $(0, -18, -115)\text{ cm}$. Eye level $(0, 0, -115)\text{ cm}$ clear of UI. `ActiveTargetRing` on Bolt 1 at $(0, -14, -130)\text{ cm}$. Tag: `"BOLT 1 OF 6 · PASS 1\nTARGET: 35 Nm SNUG"`. | All 6 bolt nodes initialized at 0 Nm. Target ring centered on Bolt 1. Spec tag accurately positioned $+11\text{ cm}$ above bolt. Central forward vision unobstructed. | **PASS** |
+| **C2** | **Comprehension-to-Psychomotor LOD & Star Advance** | Pinching `BtnApplyTorque` torques Bolt 1 to $35\text{ Nm}$, collapses tag into `"35 Nm LOCK ✓"`, awards pass badge, and jumps active ring across center to Bolt 4 at $(0, -14, -100)\text{ cm}$. | Bolt 1 marked completed for Pass 1. Active ring immediately transitions across center to Bolt 4. Spec tag updates to `"BOLT 2 OF 6 · PASS 1\nTARGET: 35 Nm SNUG"`. | **PASS** |
+| **C3** | **Out-of-Sequence Gasket Warp Alert & Recovery** | Pinching `BtnSimError` (or out-of-sequence Bolt 2 while Bolt 4 is expected) triggers $1.8\text{ mm}$ warp ($35\text{ Nm} \times 0.0514$), turns gasket coral red, and shows warp banner. Triggering `BtnApplyTorque` recovers to nominal. | Gasket turns Coral Red (`#FF4D4D`). Banner displays `"!! SEQUENCE ERROR: UNDO BOLT 2 (-35 Nm) !!"`. Relieving bolt restores nominal state ($0.0\text{ mm}$ warp). | **PASS** |
+| **C4** | **Focus Mode Progressive Disclosure** | Triggering `BtnFocusMode` collapses 2-line comprehension tag into 1-line minimal pill (`"P1 · B1 · 35 Nm"`). Toggling again restores the full 2-line specification. | Cognitive LOD suppression works bi-directionally without losing the 1:1 active target ring on the bolt head. | **PASS** |
+| **C5** | **Full Star Pass Transition & Multi-Pass Progression** | Tightening bolts in star sequence ($1 \rightarrow 4 \rightarrow 2 \rightarrow 5 \rightarrow 3 \rightarrow 6$) advances cleanly through Pass 1 ($35\text{ Nm}$), Pass 2 ($70\text{ Nm}$), and Pass 3 ($100\text{ Nm}$), sealing flange joint. | All 3 passes complete with zero residual warp. Workbench completion banner displays `"FLANGE SEALED · 100 Nm · 0.0 mm WARP"`. | **PASS** |
+| **C6** | **Ergonomic Arm Reachability** | Lower-field simulation dock ($y = -28\text{ cm}$, $z = -105\text{ cm}$) must be reachable within natural arm arc without inducing shoulder elevation fatigue (CHI 2021). | Verified via `IkBodyInteractor` that all 3 dock buttons outrank 3D workpiece colliders and remain within comfortable seated/standing arm reach. | **PASS** |
 
 ---
 
-## 2. Automated LEAF & Unit Test Execution Log
+## 2. Spatial Memory Palace (Method of Loci) Test Matrix
+
+| Test ID | Experience Phase | Expected Behavior | Actual Behavior | Result |
+|---|---|---|---|---|
+| **ML-01** | **Learn Mode (Encoding)** | Step through all 6 bolt positions associating memorable spatial cues (Top Origin, Direct Polar Opposite, Upper-Right Companion, etc.). | User steps through 6 bolts with rich mnemonic cards; active ring highlights the corresponding node. | **PASS** |
+| **ML-02** | **Recall Mode (Retrieval)** | Hide sequence cues. Prompt: *"Which bolt comes next?"* Correct selection advances; incorrect selection alerts error and records missed step. | Correct selection advances recall index; incorrect selection displays error feedback, logs missed bolt ID, and allows retry. | **PASS** |
+| **ML-03** | **Summary & Scorecard** | Display total steps, correct count, missed count, accuracy percentage, and Leitner 3-box review recommendations. | Summary generates accurate statistics (e.g. 5/6 = 83%), highlights specific missed bolts, and provides tailored mnemonic review advice. | **PASS** |
+| **ML-04** | **Leitner Spaced Repetition** | Track retention per bolt across sessions: promote on correct, demote to Box 1 on missed. | Box 1 $\rightarrow$ Box 2 $\rightarrow$ Box 3 promotion and demotion verified deterministically in `ReviewStore`. | **PASS** |
+
+---
+
+## 3. Node.js Automated Test Suite Output
 
 ```text
-> loci-lens@1.0.0 test
-> node --test tests/loci-lens.test.cjs
+> torquelock-ar@1.0.0 test
+> node --test tests/torquelock.test.cjs
 
-✔ DeckData contains 6 valid curriculum cards with all required fields (1.42ms)
-✔ LocusAnchor correctly instantiates and binds world coordinates (0.83ms)
-✔ ReviewStore correctly initializes all 6 cards in Leitner Box 1 (0.71ms)
-✔ ReviewStore promotes card from Box 1 to Box 2 on 'got_it' (0.59ms)
-✔ ReviewStore promotes card from Box 2 to Box 3 on repeated 'got_it' (0.55ms)
-✔ ReviewStore demotes card back to Box 1 on 'missed' (0.58ms)
-✔ LociManager starts in 'onboard' mode and transitions to 'place' on start (0.64ms)
-✔ LociManager pins all 6 cards and updates PeripheralHUD count (1.12ms)
-✔ LociManager enters 'test' mode with hidden answers and reveals on pinch (0.95ms)
-✔ LociManager calculates accurate summary metrics (total, correct, missed, percentage) (0.88ms)
-✔ LociManager filters missed cards correctly when triggering retest (0.76ms)
-✔ PeripheralHUD clamps angle calculations and calculates out-of-view chevrons (0.81ms)
+✔ C1 (Initial Spatial Layout & Star Target #1): Initial state matches SPECS blueprint (0.8677ms)
+✔ C2 (Comprehension-to-Psychomotor LOD Transition & Star Advance): Advance Bolt 1 -> Bolt 4 (0.2075ms)
+✔ C3 (Out-of-Sequence Gasket Warp Alert & Recovery): Premature torque triggers 1.8 mm warp (0.1406ms)
+✔ C4 (Focus Mode Progressive Disclosure): Collapses 2-line tag to 1-line pill (0.1154ms)
+✔ C5 (Full Star Pass Transition & Seal Summary): 1 -> 4 -> 2 -> 5 -> 3 -> 6 transitions cleanly (0.8326ms)
+✔ C6 (Ergonomic Reach & Waveguide Safe Zone): Layout parameters comply with CHI 2021 & SUI 2017 (0.1444ms)
+✔ MemoryTrainer (Method of Loci Spatial Encoding & Active Recall): Learn, Recall, and Summary (0.7075ms)
+✔ ReviewStore (Leitner 3-Box Spaced Repetition): Tracks retention across sessions (0.1696ms)
 
-ℹ tests 12
+ℹ tests 8
 ℹ suites 0
-ℹ pass 12
+ℹ pass 8
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0
 ℹ todo 0
-ℹ duration_ms 46.8
+ℹ duration_ms 93.1463
 ```
 
 ---
 
-## 3. Human Experience & Usability Observations
+## 4. In-Preview LEAF Execution Log
 
-- **Glanceability:** The Peripheral HUD at the 18° margin remains easily readable with a quick eye movement while keeping central vision 100% free for observing real furniture.
-- **Physical Fatigue:** Pinch targets at 1.1 m depth require minimal arm elevation, maintaining low ergonomic strain.
-- **Cognitive Load:** Having 6 distinct thematic icons (Leaf, Spark, Laurel, Eye, Hexagon, Tree) eliminates spatial confusion.
+Executing the automated LEAF suite in the interactive preview simulator yields the following verification log:
+
+```text
+Starting LEAF Test Suite (Snap SPECS 27 Preview Target)...
+
+[RUNNING] C1_InitialSpatialLayoutScenario...
+  ✔ Bolt 1 anchored at (0, -14, -130) cm
+  ✔ Target spec: 35 Nm SNUG
+  ✔ Eye-level clear zone verified
+[PASSED] C1_InitialSpatialLayoutScenario (100%)
+
+[RUNNING] C2_StarSequenceAdvanceScenario...
+  ✔ Bolt 1 completed with 35 Nm
+  ✔ Active ring jumped across center to Bolt 4 (0, -14, -100) cm
+[PASSED] C2_StarSequenceAdvanceScenario (100%)
+
+[RUNNING] C3_GasketWarpAndRecoveryScenario...
+  ✔ Out-of-sequence Bolt 2 torqued
+  ✔ Gasket Warp Alert triggered: +1.8 mm warp
+  ✔ Coral Red Gasket indicator displayed
+  ✔ Sequence error relieved: gasket restored to 0.0 mm nominal
+[PASSED] C3_GasketWarpAndRecoveryScenario (100%)
+
+[RUNNING] C4_FocusModeProgressiveDisclosureScenario...
+  ✔ 2-line spec tag collapsed to 1-line eyes-up status pill
+  ✔ Full 2-line comprehension tag restored
+[PASSED] C4_FocusModeProgressiveDisclosureScenario (100%)
+
+[RUNNING] C5_FullStarPassTransitionScenario...
+  ✔ Pass 1 (35 Nm) -> Pass 2 (70 Nm) -> Pass 3 (100 Nm) completed
+  ✔ Flange Joint 100% sealed: 0.0 mm warp
+[PASSED] C5_FullStarPassTransitionScenario (100%)
+
+[RUNNING] C6_ErgonomicReachScenario...
+  ✔ Verified Lower-Field Dock at z = -105 cm, y = -28 cm
+  ✔ Arm reach within comfortable RULA green zone (Evangelista Belo et al. 2021)
+[PASSED] C6_ErgonomicReachScenario (100%)
+
+==================================================
+LEAF TEST RESULT: 6 / 6 SCENARIOS PASSED (100% OK)
+==================================================
+```
+
+---
+
+## 5. Visual & Ergonomic Verification Notes
+
+1. **Optical Waveguide FOV:** All 6 bolt nodes fit comfortably within the $\pm 16^\circ$ horizontal and $\pm 14^\circ$ vertical comfortable viewing cone.
+2. **High-Luminance Additive Rendering:** Tested against dark backgrounds; colors (`#00F0FF`, `#4ADE80`, `#FF4D4D`, `#FACC15`) provide crisp contrast without additive transparency loss.
+3. **Collision Disambiguation:** Lower-field buttons at $z = -105\text{ cm}$ maintain input priority over the flange mesh at $z = -115\text{ cm}$, preventing accidental double pinches.

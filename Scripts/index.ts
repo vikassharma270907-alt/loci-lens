@@ -1,13 +1,12 @@
 /**
- * Loci Lens - Index & Module Barrel
+ * TorqueLock AR — Main Entry Point
+ * Exports all decoupled TypeScript domain logic and scene controllers.
  */
 
-export * from "./DeckData";
+export * from "./SequenceEngine";
+export * from "./MemoryTrainer";
 export * from "./ReviewStore";
-export * from "./LocusAnchor";
-export * from "./CardObject";
-export * from "./PeripheralHUD";
-export * from "./AudioFx";
-export * from "./InputLayer";
-export * from "./LociManager";
-export * from "./LEAFTests";
+export * from "./FocusController";
+export * from "./FlangeSceneController";
+export * from "./SIKInteractionController";
+export * from "./PreviewSimulationController";

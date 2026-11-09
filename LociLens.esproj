@@ -8,11 +8,11 @@
   "studioVersion": "5.23.2",
   "targetPlatform": "Spectacles",
   "projectType": "Lens",
-  "projectName": "LociLens",
+  "projectName": "TorqueLockAR",
   "metadata": {
-    "title": "Loci Lens",
-    "description": "AR Memory Palace for Snap SPECS",
-    "category": "Education",
+    "title": "TorqueLock AR (Integrated with Loci Lens)",
+    "description": "Spatial Memory & Procedural Flange Torquing Coach for Snap SPECS",
+    "category": "Education & Spatial Training",
     "author": "Devpost Learn SPECS Hackathon Team",
     "version": "1.0.0"
   },
@@ -33,6 +33,11 @@
     {
       "name": "Spectacles UI Kit",
       "version": "1.2.0",
+      "enabled": true
+    },
+    {
+      "name": "LEAF",
+      "version": "2.0.2",
       "enabled": true
     }
   ],

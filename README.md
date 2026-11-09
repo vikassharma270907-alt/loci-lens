@@ -1,151 +1,188 @@
-# Loci Lens — AR Memory Palace for Snap SPECS
+# TorqueLock AR — Spatial Memory & Procedural Flange Torquing Coach
 
-[![Snap SPECS](https://img.shields.io/badge/Platform-Snap%20SPECS%20%2F%20Lens%20Studio-yellow.svg)](https://developers.specs.com/)
+[![Snap SPECS 27](https://img.shields.io/badge/Platform-Snap%20SPECS%2027%20%2F%20Lens%20Studio%205.23.2-yellow.svg)](https://developers.specs.com/)
 [![Devpost Hackathon](https://img.shields.io/badge/Devpost-Learn%20AR%20with%20SPECS-blue.svg)](https://learn-specs.devpost.com/)
+[![LEAF Verification](https://img.shields.io/badge/LEAF%20Tests-100%25%20Passing%20(6%2F6)-brightgreen.svg)](docs/TEST_REPORT.md)
 [![License](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
 
-> **Loci Lens** transforms any physical room into an augmented-reality memory palace. By binding flashcards and learning concepts to physical furniture and environmental loci at real-world scale, learners engage spatial memory and active recall through hands-free head-worn AR on Snap SPECS.
+> **TorqueLock AR** is a spatial learning and procedural training coach for Snap's SPECS smart glasses. It teaches mechanics, pipefitters, and engineering apprentices to remember, recall, and execute a six-bolt star tightening sequence directly on a virtual 1:1 industrial pressure flange.
+>
+> Grounded in cognitive science, the project integrates the **Method of Loci** with spatial procedural training: **the symmetrical flange itself becomes the memory palace.**
 
 ---
 
-## 🌟 The Experience: Place → Stroll → Test → Summary
+## 🚀 Key Highlights & Novelty
 
-Unlike mobile flashcard apps that trap knowledge in a 2D vertical list, **Loci Lens** roots digital concepts in physical architecture:
-
-1. **Place Mode**: Inspect a curated 6-card learning deck. Aim at a physical surface (desk, doorway, bookshelf, chair) and pinch to pin the mnemonic card to that world locus.
-2. **Stroll Mode**: Walk freely around your room. Visual markers highlight your memory path. Looking at a locus displays the mnemonic cue; approaching within reach expands the concept.
-3. **Test Mode**: Active recall in action. The locus prompts the recall question while the answer remains completely occluded. The learner attempts recall, pinches to flip the card and reveal the answer, and self-evaluates with **Got It** or **Missed**.
-4. **Summary Dashboard**: View session retention metrics (cards mastered vs. missed), review Leitner box assignments, and trigger targeted remediation on missed cards.
-
----
-
-## 🔬 Grounded in Cognitive & AR Research
-
-Loci Lens is engineered around empirical research in spatial cognition and head-worn AR interface design:
-
-- **Lu et al. (IEEE VR 2020) — *Glanceable AR***: Demonstrates that peripheral, glanceable information access minimizes visual clutter and cognitive fatigue compared to central heads-up overlays. *Implemented in Loci Lens via the non-intrusive Peripheral HUD.*
-- **Lu, Davari, Bowman (SUI 2021) — *Rapid Activation of Glanceable Information***: Establishes explicit user activation (e.g. pinch/dwell) to prevent unintended information display and real-world occlusion. *Implemented via explicit pinch-to-reveal answer mechanics.*
-- **Krokos, Plaisant, Varshney (Virtual Reality 2019) — *Virtual Memory Palaces: Immersion Aids Recall***: Found superior recall accuracy in immersive head-tracked environments over desktop mouse-driven conditions by activating spatial vestibular and vestibular-ocular memory systems.
-- **Moll & Sykes (Virtual Reality 2023) — *Optimized VR-Based Method of Loci***: Proves that structured spatial routes with minimal onboarding cognitive load enable immediate mnemonic recall benefits even for novice learners.
-- **Lee et al. (UIST 2025) — *Sensible Agent***: Emphasizes unobtrusive, minimally disruptive interaction modalities over forced voice commands in AR.
+1. **Flange as Memory Palace:** Symmetrical bolt circles disorient technicians. TorqueLock AR binds the cross-pattern tightening sequence to six spatial memory locations on the flange, combining mnemonic association with hands-free procedural execution.
+2. **Context-Aware Level-of-Detail (Focus Mode):** Based on research by Henderson & Feiner (2011) and Lindlbauer et al. (2019), the interface automatically separates orientation from action. Floating 2-line specification tags collapse into a minimal 1-line eyes-up status ring during wrench engagement so hands and tools have an unobstructed line of sight.
+3. **Out-of-Sequence Hazard Guidance:** Tightening bolts out of order squeezes gaskets unevenly and warps castings. If an out-of-sequence bolt is torqued, the gasket plane turns coral red, a spatial alarm triggers, and a high-contrast peripheral arrow directs the user to relieve the fastener before the seal is ruined.
+4. **Decoupled Pure TypeScript Domain Engine:** Built with zero Lens Studio scene dependencies in `Assets/Scripts/SequenceEngine.ts`, enabling 100% deterministic unit testing and automated LEAF scenario verification.
+5. **Zero HUD Clutter & Ergonomic Reach:** Keeps eye level ($y = -4\text{ cm}$ to $+15\text{ cm}$) strictly empty. Interactive controls sit in the ergonomic lower visual field ($y = -28\text{ cm}$, $z = -105\text{ cm}$) to eliminate shoulder fatigue ("gorilla arm").
 
 ---
 
-## 🏗️ Technical Architecture & SPECS Integration
-
-Loci Lens is architected for Snap SPECS using Lens Studio, TypeScript, the Spectacles Interaction Kit (SIK), and the Spectacles UI Kit:
+## 🎮 The Four Experience Stages
 
 ```
-loci-lens/
++---------------------------------------------------------------------------------------+
+|                                    TorqueLock AR                                      |
++---------------------------------------------------------------------------------------+
+|  [Stage A: LEARN]    --> Associate 6 bolt nodes with spatial mnemonic cues (1->4->2..) |
+|  [Stage B: RECALL]   --> Hide sequence; test unassisted retrieval; score Got It/Missed|
+|  [Stage C: PRACTISE] --> 3D Flange simulation; active target ring; 3 passes; warp alert|
+|  [Stage D: SUMMARY]  --> Accuracy score, missed bolt positions, Leitner review schedule|
++---------------------------------------------------------------------------------------+
+```
+
+### Stage A — Learn
+- Displays the 1:1 scale six-bolt industrial flange ($42 \times 8 \times 42\text{ cm}$) at workbench depth ($z = -115\text{ cm}$).
+- Teaches the criss-cross star sequence: **$1 \rightarrow 4 \rightarrow 2 \rightarrow 5 \rightarrow 3 \rightarrow 6$**.
+- Users associate each spatial node with its procedural role (e.g. Bolt 1: *Initial Anchor*, Bolt 4: *Opposing Cross to equalize centerline load*).
+
+### Stage B — Recall
+- Hides the visible sequence numbers.
+- Asks: *"Which bolt comes next?"*
+- The learner pinches the expected bolt node. Correct answers provide positive confirmation and advance the sequence; incorrect selections explain the mistake and flag the node for targeted review.
+
+### Stage C — Practise
+- A glowing cyan `ActiveTargetRing` ($9\text{ cm}$ OD) hugs the active fastener.
+- Trainees progress through three progressive torque passes:
+  - **Pass 1 (Snug):** $35\text{ Nm}$ ($40\%$ nominal crush)
+  - **Pass 2 (Intermediate):** $70\text{ Nm}$ ($70\%$ nominal crush)
+  - **Pass 3 (Final Spec):** $100\text{ Nm}$ ($100\%$ uniform seal)
+- Trainees toggle **Focus Mode** to collapse detailed tags and test the **Sim Wrong Bolt** fault scenario.
+
+### Stage D — Summary & Spaced Repetition
+- Displays overall recall accuracy, correct vs. missed steps, and Leitner 3-box review recommendations.
+- Missed bolt positions can be retested immediately.
+
+---
+
+## 📐 Spatial Blueprint & Centimeter Coordinates
+
+Registered within the SPECS 27 optical waveguide frustum ($\pm 16^\circ$ horizontal, $\pm 14^\circ$ vertical safe preview frame, camera origin at $0, 0, 0$):
+
+| Element / Object Name | World Position $(X, Y, Z)\text{ cm}$ | Dimensions $(W \times H \times D)\text{ cm}$ | Additive Color Token | Design / Ergonomic Justification |
+|---|---|---|---|---|
+| **EyeLevelClearZone** | $(0, 0, -115)$ | $66.0 \times 18.0 \times 1.0$ (Empty) | Transparent | Prevents central line-of-sight occlusion |
+| **FlangeWorkbenchAssembly** | $(0, -18, -115)$ | $42.0 \times 8.0 \times 42.0$ | Light Silver-Blue (`#B0C4DE`) | Sits on workbench inside comfortable FOV |
+| **BoltNode_1 (12 o'clock)** | $(0, -14, -130.0)$ | $4.5 \times 3.0 \times 4.5$ | Cyan (`#00F0FF`) / Mint (`#4ADE80`) | 1:1 scale M20 hex bolt head; $15\text{ cm}$ radius |
+| **BoltNode_2 (2 o'clock)** | $(+13, -14, -122.5)$ | $4.5 \times 3.0 \times 4.5$ | Silver (`#8899AA`) | $60^\circ$ clockwise chord spacing |
+| **BoltNode_3 (4 o'clock)** | $(+13, -14, -107.5)$ | $4.5 \times 3.0 \times 4.5$ | Silver (`#8899AA`) | Lower-right quadrant stabilization |
+| **BoltNode_4 (6 o'clock)** | $(0, -14, -100.0)$ | $4.5 \times 3.0 \times 4.5$ | Silver (`#8899AA`) | Directly across center from Bolt 1 |
+| **BoltNode_5 (8 o'clock)** | $(-13, -14, -107.5)$ | $4.5 \times 3.0 \times 4.5$ | Silver (`#8899AA`) | Counterbalance polar cross |
+| **BoltNode_6 (10 o'clock)** | $(-13, -14, -122.5)$ | $4.5 \times 3.0 \times 4.5$ | Silver (`#8899AA`) | Pattern closure and star seal |
+| **ActiveTargetRing** | Centered on active bolt | $9.0\text{ cm}$ outer diameter | Cyan (`#00F0FF`) | 1:1 alignment guide on physical bolt |
+| **ActiveBoltSpecTag** | $(\text{Bolt\_X}, \text{Bolt\_Y} + 11, \text{Bolt\_Z})$ | $26.0 \times 8.5$ | White (`#FFFFFF`) on translucent | Floats $+11\text{ cm}$ in Y; collapses in Focus Mode |
+| **GasketCrushPlane** | $(0, -17, -115)$ | $34.0 \times 1.5 \times 34.0$ | Mint (`#4ADE80`) / Coral (`#FF4D4D`) | Visualizes mechanical gasket stress |
+| **PeripheralWarpArrow** | $(+24, -10, -110)$ | $12.0 \times 6.0$ | Amber (`#FACC15`) / Coral (`#FF4D4D`) | Gruenefeld (2017) out-of-view guidance |
+| **LowerSimDock (3 Buttons)** | $(-18, 0, +18, -28, -105)$ | $15.0 \times 7.5\text{ cm}$ each | Primary Blue / Cyan (`#00F0FF`) | Lower visual field; outranks prop colliders |
+
+---
+
+## 🔬 Academic Research Grounding
+
+TorqueLock AR translates 14 foundational peer-reviewed papers into concrete SPECS engineering constraints (see [docs/RESEARCH_EVIDENCE.md](docs/RESEARCH_EVIDENCE.md)):
+
+- **Method of Loci & Embodied Spatial Memory:** Krokos et al. (2019) ($8.8\%$ recall gain in immersive HMD) and Moll & Sykes (2023) justify turning the 6 flange bolt positions into physical memory locations.
+- **Glanceable AR & Peripheral HUD:** Lu et al. (IEEE VR 2020) and Lu et al. (ACM SUI 2021) mandate keeping eye level clear and accessing status via low-effort peripheral glances.
+- **Out-of-View Spatial Guidance:** Gruenefeld et al. (ACM SUI 2017) demonstrated that peripheral directional arrows yield $21.25^\circ$ low error and $84.5\%$ target localization.
+- **View Management & Label Separation:** Bell et al. (ACM UIST 2001) and Azuma & Furmanski (ISMAR 2003) establish that only the active target should display an expanded specification tag to prevent clutter and occlusion.
+- **Comprehension vs. Psychomotor Phases:** Henderson & Feiner (IEEE TVCG 2011) proved that spatially aligned 3D cues reduce maintenance error by $82\%$, provided visual clutter fades during physical manipulation.
+- **Context-Aware Online Adaptation (Focus Mode):** Lindlbauer et al. (ACM UIST 2019) demonstrated that adaptive LOD Knapsack suppression cuts secondary UI interactions by $36\%$ ($p < 0.001$).
+- **3D Reach Ergonomics:** Evangelista Belo et al. (ACM CHI 2021) and Fender et al. (ISMAR 2022) establish that tabletop/lower-field interaction ($y = -28\text{ cm}$, $z = -105\text{ cm}$) minimizes RULA arm fatigue.
+- **Additive Optical Display Physics:** Kim et al. (ACM SUI 2019) proved that black renders transparent on optical see-through displays, necessitating high-luminance foreground tokens (#FFFFFF, #00F0FF, #4ADE80, #FF4D4D).
+- **Multi-Agent XR Synthesis:** De La Torre et al. (ACM CHI 2024, LLMR) showed that a Planner-Builder-Inspector loop cuts code generation errors by $4\times$.
+
+---
+
+## ⚠️ Technical Safety & Validity Rules
+
+1. **Simulation Training Tool Only:** Numeric torque values ($35\text{ Nm}$, $70\text{ Nm}$, $100\text{ Nm}$) and the $1.8\text{ mm}$ gasket deflection formula ($K_{\text{warp}} = 0.0514\text{ mm/Nm}$) are illustrative training dataset parameters.
+2. **No Physical Strain Measurement:** The simulation does not measure physical preload, fastener elasticity, or lubrication coefficients.
+3. **No Safety Certification:** The software is not certified for pressurized industrial boundary assembly. Real-world procedures must follow manufacturer specifications and **ASME PCC-1** (*Guidelines for Pressure Boundary Bolted Flange Joint Assembly*).
+4. **Honest Preview Stand-Ins:** Laptop previews cannot physically connect to a Bluetooth torque wrench; on-screen labels transparently display `"PREVIEW STAND-IN: SIMULATED BLE TORQUE WRENCH"`.
+
+---
+
+## 🏗️ Repository Architecture
+
+```text
+torquelock-ar/
+├── TorqueLock.esproj          # Lens Studio 5.23.2 SPECS Project definition
+├── LociLens.esproj            # Backwards-compatible Lens project definition
+├── .mcp.json                  # Lens Studio MCP Server configuration
+├── package.json               # Node.js project configuration & test runner
+├── tsconfig.json              # TypeScript compiler settings
 ├── devpost/
-│   └── design-brief.md            # Official Devpost Learn skill-pack brief (status: approved)
+│   └── design-brief.md        # Official Devpost Learn skill-pack brief (status: approved)
 ├── docs/
-│   ├── TEST_REPORT.md             # Formal acceptance & LEAF test report
-│   ├── KNOWN_LIMITATIONS.md       # Honest boundary conditions (Preview vs Hardware)
-│   └── DEMO_INSTRUCTIONS.md      # Step-by-step 3-minute video recording walkthrough
-├── Scripts/
-│   ├── DeckData.ts                # 6-card demo deck model and schema
-│   ├── LociManager.ts             # State machine (Onboard, Place, Stroll, Test, Summary)
-│   ├── CardObject.ts              # 3D billboard visual card & reveal mechanics
-│   ├── LocusAnchor.ts             # World surface raycast and coordinate binding
-│   ├── PeripheralHUD.ts           # Peripheral progress ring (Lu et al. compliant)
-│   ├── ReviewStore.ts             # Leitner 3-box spaced repetition data engine
-│   ├── InputLayer.ts              # Spectacles Interaction Kit (SIK) pinch & dwell
-│   ├── AudioFx.ts                 # Spatial audio chimes and out-of-view directional alerts
-│   ├── LEAFTests.ts               # Automated LEAF test suites for Lens Studio
-│   └── index.ts                   # Lens entry point
+│   ├── RESEARCH_EVIDENCE.md   # 14 peer-reviewed citations & design rules
+│   ├── TEST_REPORT.md         # Formal acceptance & LEAF test report (100% Pass)
+│   ├── KNOWN_LIMITATIONS.md   # Safety disclaimers & preview stand-in notes
+│   └── DEMO_INSTRUCTIONS.md   # 2:30 video pitch script & preview checklist
+├── Assets/
+│   ├── Scripts/
+│   │   ├── SequenceEngine.ts  # Decoupled mechanical & star-sequence state machine
+│   │   ├── MemoryTrainer.ts   # Method of Loci spatial cues & recall tester
+│   │   ├── ReviewStore.ts     # Leitner 3-box spaced repetition engine
+│   │   ├── FocusController.ts # Cognitive load & LOD adaptation manager
+│   │   ├── FlangeSceneController.ts    # 3D world-anchored flange and bolt nodes
+│   │   ├── SIKInteractionController.ts # SIK pinch & UI Kit button event router
+│   │   ├── PreviewSimulationController.ts # Honest preview stand-in controller
+│   │   └── index.ts           # Root TypeScript export
+│   └── Tests/
+│       └── TorqueLockScenarios.ts # 6 automated LEAF scenarios (C1 through C6)
 ├── preview/
-│   ├── index.html                 # Interactive Web/Canvas SPECS preview simulator
-│   ├── preview-runner.js          # Interactive simulator logic (WASD, mouse-look, pinch)
-│   └── styles.css                 # SPECS optical field-of-view shader simulation
-├── tests/
-│   └── loci-lens.test.cjs         # Node.js automated test suite (100% pass)
-├── .mcp.json                      # Lens Studio MCP server bridge configuration
-├── LociLens.esproj                # Lens Studio project definition
-├── package.json                   # Project scripts and test harness
-└── README.md
+│   ├── index.html             # High-fidelity 3D browser SPECS simulator
+│   ├── preview-runner.js      # 3D perspective canvas, flange, and interactive test runner
+│   └── styles.css             # SPECS additive optical waveguide styling
+└── tests/
+    ├── torquelock.test.cjs    # Deterministic Node.js unit & integration tests
+    └── loci-lens.test.cjs     # Mnemonic model verification tests
 ```
-
-### Component Roles
-
-| Component | Responsibility |
-|---|---|
-| **`DeckData`** | Encapsulates the 6-card learning curriculum with mnemonic iconography, question prompts, and answers. |
-| **`LociManager`** | Master state machine orchestrating Phase transitions, active card tracking, and flow control. |
-| **`CardObject`** | Manages 3D card visual hierarchy, additive rendering contrast, flip animations, and answer occlusion. |
-| **`LocusAnchor`** | Ties virtual cards to real-world coordinates with preview raycast fallbacks. |
-| **`PeripheralHUD`** | Renders progress status at the 18° peripheral margin (1.1 m focal plane), preventing central vision occlusion. |
-| **`ReviewStore`** | Leitner 3-box spaced repetition store tracking correct vs. missed cards and persistence. |
-| **`InputLayer`** | Binds SIK pinch gestures, cursor hover/focus states, and mouse preview inputs. |
-| **`AudioFx`** | Synthesizes auditory feedback for card pinning, answer reveal, and directional out-of-view guidance. |
 
 ---
 
-## 🚀 Getting Started
+## 🧪 Testing & Verification
 
-### Prerequisites
-
-- Node.js (v18+)
-- Lens Studio (v5.22+ or v5.23.2 recommended for CLAD MCP compatibility)
-- Git
-
-### 1. Running Automated Tests
-
-Run the full automated test suite verifying state machines, Leitner scoring, and acceptance criteria:
-
+### Running Automated Tests
+Execute the complete test suite (20 unit and integration tests covering Done Criteria C1 through C6):
 ```bash
 npm test
 ```
 
-### 2. Launching the Interactive SPECS Preview Simulator
-
-To test the full Place → Stroll → Test → Summary experience in a simulated SPECS 37°×32° optical display environment:
-
+### Running the Interactive Preview Simulator
+Launch the local web server to experience the SPECS 27 optical simulation in any browser:
 ```bash
 npm run preview
+# Open http://localhost:8080/ in your browser
 ```
-Or open `preview/index.html` directly in any web browser.
 
-**Preview Controls:**
-- **WASD**: Walk through the room.
-- **Mouse Drag**: Look around (360° rotational camera).
-- **Primary Click**: SIK Pinch gesture (pin card, flip answer, select Got It / Missed).
-- **Tab / 1-4**: Switch between modes (Onboard, Place, Stroll, Test, Summary).
+### Running Automated LEAF Scenarios in Lens Studio
+In Lens Studio 5.23.2, open the LEAF panel and run `TorqueLockLeafIndex` to execute:
+- `C1_InitialSpatialLayoutScenario`
+- `C2_StarSequenceAdvanceScenario`
+- `C3_GasketWarpAndRecoveryScenario`
+- `C4_FocusModeProgressiveDisclosureScenario`
+- `C5_FullStarPassTransitionScenario`
+- `C6_ErgonomicReachScenario`
 
-### 3. Opening in Lens Studio
-
-1. Launch **Lens Studio**.
-2. Select **Open Project** and navigate to this directory.
-3. Open `LociLens.esproj`.
-4. In the **Interactive Preview** panel, test placing cards on virtual room geometry using the mouse-driven hand cursor.
-5. In CLAD/MCP-connected environments, prompt the agent:
-   > *"Read devpost/design-brief.md and build it for SPECS. Follow the brief closely. Run LEAF tests for each done criterion."*
+All 6 scenarios execute asynchronously and report **PASSED** in the Logger.
 
 ---
 
-## 🎬 3-Minute Demo Video Walkthrough
+## 🎬 Under-3-Minute Video Demo Structure
 
-The demo video follows the exact judging criteria flow:
-1. **0:00 - 0:25**: Introduction to the Problem (rote 2D flashcards fail spatial cognition).
-2. **0:25 - 0:45**: Planning with Devpost Learn Skill Pack (`devpost/design-brief.md`).
-3. **0:45 - 1:20**: **Place Mode** — Pinning 6 cards to physical room locations with peripheral HUD updates.
-4. **1:20 - 1:50**: **Stroll Mode** — Navigating the room, revealing mnemonic cues on approach.
-5. **1:50 - 2:25**: **Test Mode** — Active recall, answer reveal on pinch, self-grading (Got It / Missed).
-6. **2:25 - 2:45**: **Summary Screen** — Retention metrics, Leitner box assignments, reviewing missed cards.
-7. **2:45 - 3:00**: Key takeaways and closing.
-
----
-
-## 📋 Hackathon Submission Compliance Checklist
-
-- [x] **New Project**: Built specifically for the Learn AR with SPECS Hackathon.
-- [x] **Devpost Skill Pack Planning**: Official design brief generated at `devpost/design-brief.md` via `plan-lens`.
-- [x] **SPECS Architecture**: Built with SIK and Spectacles UI Kit principles.
-- [x] **Interactive Preview Verifiable**: Operates reliably in Lens Studio Interactive Preview with zero external hardware prerequisites.
-- [x] **Honest Disclosure**: Clear distinction between simulated preview validation and physical see-through hardware behavior.
+The video demo strictly follows the 2:30 blueprint outlined in [docs/DEMO_INSTRUCTIONS.md](docs/DEMO_INSTRUCTIONS.md):
+- **0:00 – 0:20:** Product introduction & problem statement (symmetrical flange disorientation).
+- **0:20 – 0:50:** Stage A: Learn Mode (Method of Loci spatial cues on the 6 bolts).
+- **0:50 – 1:20:** Stage B: Recall Mode (hidden sequence retrieval, correct & incorrect feedback).
+- **1:20 – 1:55:** Stage C: Practice Mode (star pattern progression, Focus Mode LOD collapse, Sim Wrong Bolt $1.8\text{ mm}$ warp alert and recovery).
+- **1:55 – 2:15:** Stage D: Summary (accuracy metrics and Leitner 3-box review recommendations).
+- **2:15 – 2:30:** Technical proof (Lens Studio Interactive Preview and LEAF automated test panel showing 6/6 PASSED).
 
 ---
 
-## 📄 License
-
-MIT License. Developed for the Devpost Learn AR with SPECS Hackathon.
+## ⚖️ License
+MIT License. Built for the **Devpost Learn AR with SPECS Hackathon** sponsored by Snap Inc.

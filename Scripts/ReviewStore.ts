@@ -1,142 +1,142 @@
 /**
- * Loci Lens - ReviewStore
- * Implements the Leitner 3-Box Spaced Repetition engine and session retention statistics.
- * Box 1 = Active / Needs Review
- * Box 2 = Intermediate Retention
- * Box 3 = Mastered
+ * TorqueLock AR — ReviewStore.ts
+ * Implements a 3-Box Leitner Spaced-Repetition System for Bolt Sequence Retention.
+ *
+ * Grounded in:
+ * - Ebbinghaus & Leitner spaced retrieval principles.
+ * - Persistent retention scoring across recall passes without requiring cloud databases.
  */
 
-import { LearningCard, DEMO_DECK } from "./DeckData";
-
-export interface ReviewRecord {
-  cardId: string;
+export interface BoltReviewRecord {
+  readonly boltId: number;
   box: 1 | 2 | 3;
-  correctCount: number;
-  missedCount: number;
+  correctStreak: number;
+  totalCorrect: number;
+  totalMissed: number;
   lastOutcome: "got_it" | "missed" | "untested";
-  lastReviewedAt?: number;
+  lastTestedAt?: number;
 }
 
-export interface ReviewStats {
-  totalCards: number;
-  testedCount: number;
-  gotItCount: number;
-  missedCount: number;
-  accuracyPercentage: number;
-  boxCounts: {
-    box1: number;
-    box2: number;
-    box3: number;
-  };
+export interface ReviewStoreSummary {
+  readonly totalBolts: number;
+  readonly box1Count: number; // Needs Review
+  readonly box2Count: number; // Learning
+  readonly box3Count: number; // Mastered
+  readonly masteryPercentage: number;
+  readonly recommendations: readonly string[];
 }
 
 export class ReviewStore {
-  private records: Map<string, ReviewRecord> = new Map();
+  private records: Map<number, BoltReviewRecord> = new Map();
 
-  constructor(cards: LearningCard[] = DEMO_DECK) {
-    this.initialize(cards);
+  constructor() {
+    this.reset();
   }
 
-  public initialize(cards: LearningCard[]): void {
+  public reset(): void {
     this.records.clear();
-    cards.forEach((card) => {
-      this.records.set(card.id, {
-        cardId: card.id,
+    for (let boltId = 1; boltId <= 6; boltId++) {
+      this.records.set(boltId, {
+        boltId,
         box: 1,
-        correctCount: 0,
-        missedCount: 0,
+        correctStreak: 0,
+        totalCorrect: 0,
+        totalMissed: 0,
         lastOutcome: "untested"
       });
-    });
+    }
   }
 
-  public recordResult(cardId: string, outcome: "got_it" | "missed"): ReviewRecord {
-    const existing = this.records.get(cardId);
-    if (!existing) {
-      throw new Error(`ReviewStore: Card ID "${cardId}" not found in active deck.`);
-    }
+  public recordAttempt(boltId: number, outcome: "got_it" | "missed"): BoltReviewRecord {
+    const rec = this.records.get(boltId) || {
+      boltId,
+      box: 1,
+      correctStreak: 0,
+      totalCorrect: 0,
+      totalMissed: 0,
+      lastOutcome: "untested"
+    };
 
-    const now = Date.now();
-    let newBox: 1 | 2 | 3 = existing.box;
+    rec.lastOutcome = outcome;
+    rec.lastTestedAt = Date.now();
 
     if (outcome === "got_it") {
-      newBox = Math.min(3, existing.box + 1) as 1 | 2 | 3;
-      existing.correctCount += 1;
+      rec.totalCorrect++;
+      rec.correctStreak++;
+      if (rec.box === 1) {
+        rec.box = 2;
+      } else if (rec.box === 2) {
+        rec.box = 3;
+      }
     } else {
-      // Missed items demote immediately to Box 1 for rapid re-acquisition
-      newBox = 1;
-      existing.missedCount += 1;
+      rec.totalMissed++;
+      rec.correctStreak = 0;
+      rec.box = 1; // Demote back to active review
     }
 
-    existing.box = newBox;
-    existing.lastOutcome = outcome;
-    existing.lastReviewedAt = now;
-
-    this.records.set(cardId, { ...existing });
-    return existing;
+    this.records.set(boltId, rec);
+    return { ...rec };
   }
 
-  public getRecord(cardId: string): ReviewRecord | undefined {
-    return this.records.get(cardId);
+  public getBoltRecord(boltId: number): BoltReviewRecord | undefined {
+    const rec = this.records.get(boltId);
+    return rec ? { ...rec } : undefined;
   }
 
-  public getAllRecords(): ReviewRecord[] {
-    return Array.from(this.records.values());
-  }
-
-  public getMissedCards(): string[] {
-    return Array.from(this.records.values())
-      .filter((r) => r.lastOutcome === "missed")
-      .map((r) => r.cardId);
-  }
-
-  public getMasteredCards(): string[] {
-    return Array.from(this.records.values())
-      .filter((r) => r.box === 3)
-      .map((r) => r.cardId);
-  }
-
-  public getStats(): ReviewStats {
-    const records = Array.from(this.records.values());
-    const totalCards = records.length;
-    let testedCount = 0;
-    let gotItCount = 0;
-    let missedCount = 0;
-    let box1 = 0;
-    let box2 = 0;
-    let box3 = 0;
-
-    for (const r of records) {
-      if (r.lastOutcome !== "untested") {
-        testedCount++;
+  public getMissedBolts(): number[] {
+    const missed: number[] = [];
+    this.records.forEach((rec, boltId) => {
+      if (rec.box === 1 || rec.lastOutcome === "missed") {
+        missed.push(boltId);
       }
-      if (r.lastOutcome === "got_it") {
-        gotItCount++;
-      } else if (r.lastOutcome === "missed") {
-        missedCount++;
-      }
+    });
+    return missed;
+  }
 
-      if (r.box === 1) box1++;
-      else if (r.box === 2) box2++;
-      else if (r.box === 3) box3++;
+  public getMasteredBolts(): number[] {
+    const mastered: number[] = [];
+    this.records.forEach((rec, boltId) => {
+      if (rec.box === 3) {
+        mastered.push(boltId);
+      }
+    });
+    return mastered;
+  }
+
+  public getBoxDistribution(): { box1: number; box2: number; box3: number } {
+    let b1 = 0;
+    let b2 = 0;
+    let b3 = 0;
+    this.records.forEach((rec) => {
+      if (rec.box === 1) b1++;
+      else if (rec.box === 2) b2++;
+      else if (rec.box === 3) b3++;
+    });
+    return { box1: b1, box2: b2, box3: b3 };
+  }
+
+  public getSummary(): ReviewStoreSummary {
+    const dist = this.getBoxDistribution();
+    const masteryPct = Math.round((dist.box3 / 6) * 100);
+    const recommendations: string[] = [];
+
+    if (dist.box3 === 6) {
+      recommendations.push("All 6 bolt sequence nodes achieved Box 3 Mastery!");
+    } else {
+      const needsReview = this.getMissedBolts();
+      if (needsReview.length > 0) {
+        recommendations.push(`Priority review scheduled for Bolt(s): ${needsReview.join(", ")}`);
+      }
+      recommendations.push(`${dist.box3}/6 nodes mastered (${masteryPct}%). Continue progressive training.`);
     }
-
-    const accuracyPercentage =
-      testedCount > 0 ? Math.round((gotItCount / testedCount) * 1000) / 10 : 0;
 
     return {
-      totalCards,
-      testedCount,
-      gotItCount,
-      missedCount,
-      accuracyPercentage,
-      boxCounts: { box1, box2, box3 }
+      totalBolts: 6,
+      box1Count: dist.box1,
+      box2Count: dist.box2,
+      box3Count: dist.box3,
+      masteryPercentage: masteryPct,
+      recommendations
     };
-  }
-
-  public resetTestedState(): void {
-    for (const record of this.records.values()) {
-      record.lastOutcome = "untested";
-    }
   }
 }

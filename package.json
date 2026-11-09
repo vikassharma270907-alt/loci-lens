@@ -1,20 +1,24 @@
 {
-  "name": "loci-lens",
+  "name": "torquelock-ar",
   "version": "1.0.0",
-  "description": "Loci Lens — Augmented Reality Memory Palace for Snap SPECS",
-  "main": "Scripts/index.ts",
+  "description": "TorqueLock AR — Spatial Memory and Procedural Training Coach for Snap SPECS",
+  "main": "Assets/Scripts/index.ts",
   "type": "module",
   "scripts": {
-    "test": "node --test tests/loci-lens.test.cjs",
-    "preview": "node -e \"const http=require('http'), fs=require('fs'), path=require('path'); const server=http.createServer((req,res)=>{ let p=req.url==='/'?'preview/index.html':req.url.replace(/^\\//,''); if(!fs.existsSync(p)) { res.writeHead(404); return res.end('Not found'); } const ext=path.extname(p); const ct={'html':'text/html','js':'application/javascript','css':'text/css'}[ext.slice(1)]||'text/plain'; res.writeHead(200,{'Content-Type':ct}); fs.createReadStream(p).pipe(res); }); server.listen(8080,()=>console.log('Loci Lens SPECS Preview running at http://localhost:8080/'));\""
+    "test": "node --test tests/torquelock.test.cjs tests/loci-lens.test.cjs",
+    "test:torquelock": "node --test tests/torquelock.test.cjs",
+    "test:loci": "node --test tests/loci-lens.test.cjs",
+    "preview": "node -e \"const http=require('http'), fs=require('fs'), path=require('path'); const server=http.createServer((req,res)=>{ let p=req.url==='/'?'preview/index.html':req.url.replace(/^\\//,''); if(!fs.existsSync(p)) { res.writeHead(404); return res.end('Not found'); } const ext=path.extname(p); const ct={'html':'text/html','js':'application/javascript','css':'text/css'}[ext.slice(1)]||'text/plain'; res.writeHead(200,{'Content-Type':ct}); fs.createReadStream(p).pipe(res); }); server.listen(8080,()=>console.log('TorqueLock AR SPECS Preview running at http://localhost:8080/'));\""
   },
   "keywords": [
     "snap",
     "spectacles",
     "lens-studio",
     "augmented-reality",
+    "torquelock",
     "memory-palace",
     "method-of-loci",
+    "procedural-training",
     "clad",
     "leaf"
   ],

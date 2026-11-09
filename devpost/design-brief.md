@@ -1,86 +1,118 @@
 ---
 status: approved
+platform: SPECS 27 (Lens Studio 5.23.2 Interactive Preview)
+project: TorqueLock AR — Spatial Memory & Procedural Flange Torquing Coach
 ---
 
-# Design brief: Loci Lens
+# Design Brief: TorqueLock AR — Spatial Star-Pattern Torque & Gasket Coach
 
-<!-- Filled in by plan-lens from the learner's interview. Generated for the Learn AR with SPECS Devpost Hackathon. -->
+<!-- Generated via the Devpost Learn SPECS Skill Pack (plan-lens). Approved for CLAD & LEAF automated implementation. -->
 
-## The one spatial moment
-The user stands in their room, looks across toward a desk or shelf, sees a subtle luminous locus anchor, and performs a natural pinch gesture to reveal an associated learning card whose answer was mentally and spatially bound to that physical spot.
+## 1. Problem & Target Audience
 
-## Why it belongs on glasses
-- Uses: draws in the world, leaves your body free, shares your view
-- Why it's better than the phone or laptop version: A phone or laptop forces the learner to review flashcards on an isolated, flat 2D viewport, severing information from environmental embodiment. Loci Lens implements the ancient Method of Loci directly on head-worn AR: cards anchor to real physical geometry at 1:1 scale, freeing both hands and eyes to walk, orient, and encode recall pathways through bodily movement.
+- **Who it is for:** Mechanical engineering students, industrial pipefitting apprentices, automotive and aviation technicians, and learners mastering multi-bolt pressure-flange assembly procedures.
+- **Why AR glasses instead of a phone or laptop:**
+  - Tightening a high-torque pressure boundary flange requires both hands physically gripping a heavy torque wrench while maintaining continuous optical gaze on the workpiece.
+  - Symmetrical bolt circles create severe spatial disorientation: checking a 2D paper chart or smartphone screen forces constant context switching, resulting in skipped bolts, double-torqued studs, or uneven gasket crush (flange warping).
+  - TorqueLock AR grounds the procedure in the physical world: the glasses look down at the flange, project the tightening sequence directly onto the physical fasteners at 1:1 scale, and dynamically collapse secondary instructions as soon as the mechanic engages the tool.
+- **The Single Core Spatial Moment:**
+  - Standing over a 1:1 scale six-bolt industrial flange at workbench depth ($z = -115\text{ cm}$, $y = -18\text{ cm}$), watching a cyan glowing star-pattern ring jump directly across the center of the flange from Bolt 1 (12 o'clock) to Bolt 4 (6 o'clock), seeing the floating 2-line specification tag collapse into a minimal 1-line eyes-up status ring during wrench engagement, and catching an out-of-sequence gasket-warp hazard before the joint is compromised.
 
-## Product or overlay
-- Type: overlay: it maps and binds digital mnemonic anchors onto physical surfaces and furniture in the user's room.
-- What the real version would sense: physical surfaces, room geometry, world mesh.
-- Stand-in for the preview: simulated world mesh and virtual surface placement raycast at 1.1 m focal depth; mouse look and WASD movement stand in for head motion, while primary click acts as SIK pinch.
+---
 
-## Where things live
-- Where the user is looking during the main task: looking forward and 10° to 15° below eye level toward physical furniture or room anchors (0.8 m to 2.0 m distance).
-- CardObject (Learning Card): sits anchored in 3D world space at the chosen locus, roughly 1.1 m distance, approximately 32 cm wide by 22 cm high, facing the user with a 15° upward tilt.
-- PeripheralHUD: anchored in the lower-right peripheral display margin (approx. 18° off optical center, 1.1 m virtual focal plane), measuring 10 cm in diameter so central vision remains unobstructed.
-- Out-of-view direction cue: subtle directional chevron (3 cm) rendered at the display viewport perimeter pointing toward the next scheduled locus with a soft spatial chime.
+## 2. Spatial Layout & Centimeter Coordinates (Camera Origin at 0, 0, 0)
 
-## Hands and input
-- Pinch to pin: aims at target surface and places the currently selected card at that world coordinate.
-- Pinch to reveal: tapping or pinching an active card in Test mode flips the card to uncover the hidden answer.
-- Pinch Got It / Missed: big 14 cm x 5 cm buttons below the revealed answer plate to categorize recall.
-- Targets are big and highlight when aimed at (SIK cursor focus state with high-contrast glowing border).
-- Voice (if any) and the button that does the same job: voice input is out of scope for MVP; high-contrast SIK pinch buttons carry all interactions reliably in preview and on device.
+All virtual elements are registered in real-world centimeter coordinates within the Snap SPECS 27 optical waveguide frustum ($\pm 16^\circ$ horizontal, $\pm 14^\circ$ vertical safe preview frame):
 
-## When things show
-- Onboarding card: shows on initial launch at 1.1 m directly ahead; dismisses on pinch "Start".
-- Placed Cards: in Stroll and Test modes, only the minimalist mnemonic locus icon (8 cm) is visible; card details and question text expand upon gaze/cursor proximity (<1.5 m); answer reveals exclusively on explicit pinch.
-- PeripheralHUD: persists unobtrusively in the periphery, fading to 30% opacity during active card recall to eliminate distraction.
-- Summary screen: appears automatically once all 6 cards are reviewed, detailing accuracy, retention rate, and missed items.
-- If something needs attention out of view: soft spatial audio chime and directional border chevron pointing toward the target locus.
+1. **Eye-Level Clear Zone ($y = -4\text{ cm}$ to $+15\text{ cm}$, $z = -115\text{ cm}$):**
+   - Strictly empty. Zero floating HUDs, head-locked scoreboards, or persistent timers occluding central forward vision.
+2. **Flange Workbench Assembly ($x = 0$, $y = -18\text{ cm}$, $z = -115\text{ cm}$):**
+   - 1:1 scale circular industrial pressure flange ($42 \times 8 \times 42\text{ cm}$ base, $30\text{ cm}$ bolt circle diameter) with intermediate gasket layer (`GasketCrushPlane` at $y = -17\text{ cm}$).
+3. **Six Hex Bolt Nodes (`BoltNode_1` through `BoltNode_6`):**
+   - Arranged clockwise at 60-degree intervals on a $15\text{ cm}$ radius ($30\text{ cm}$ circle) around $(0, -14, -115)\text{ cm}$:
+     - **BoltNode_1** (12 o'clock / Top): $(0, -14, -130.0)\text{ cm}$
+     - **BoltNode_2** (2 o'clock / Upper Right): $(+13, -14, -122.5)\text{ cm}$
+     - **BoltNode_3** (4 o'clock / Lower Right): $(+13, -14, -107.5)\text{ cm}$
+     - **BoltNode_4** (6 o'clock / Bottom): $(0, -14, -100.0)\text{ cm}$
+     - **BoltNode_5** (8 o'clock / Lower Left): $(-13, -14, -107.5)\text{ cm}$
+     - **BoltNode_6** (10 o'clock / Upper Left): $(-13, -14, -122.5)\text{ cm}$
+4. **Star Sequence Order:**
+   - Demonstrates the standard criss-cross pattern: **$1 \rightarrow 4 \rightarrow 2 \rightarrow 5 \rightarrow 3 \rightarrow 6$** across 3 progressive training passes:
+     - **Pass 1 (Snug):** $35\text{ Nm}$ ($40\%$ nominal crush)
+     - **Pass 2 (Intermediate):** $70\text{ Nm}$ ($70\%$ nominal crush)
+     - **Pass 3 (Final Spec):** $100\text{ Nm}$ ($100\%$ uniform seal)
+5. **Active Bolt Ring & Spec Tag:**
+   - `ActiveTargetRing`: $9.0\text{ cm}$ outer diameter glowing cyan ring hugging the active bolt head.
+   - `ActiveBoltSpecTag`: $26.0 \times 8.5\text{ cm}$ floating tag positioned $11\text{ cm}$ above active bolt at $(\text{Bolt\_X}, \text{Bolt\_Y} + 11, \text{Bolt\_Z})$. Max 2 lines of text. Collapses to compact 1-line pill in Focus Mode.
+6. **Lower-Field Preview Sim Dock ($z = -105\text{ cm}$, $y = -28\text{ cm}$):**
+   - Three large Spectacles UI Kit Primary buttons ($15.0 \times 7.5\text{ cm}$ each with $3\text{ cm}$ spacing), outranking 3D prop colliders:
+     - `BtnApplyTorque` at $(-18, -28, -105)$: "Apply Torque" (advances active bolt through Wrench Engaged $\rightarrow$ Target Reached $\rightarrow$ Next Star Bolt).
+     - `BtnSimError` at $(0, -28, -105)$: "Sim Wrong Bolt" (simulates torquing an adjacent out-of-sequence bolt, triggering a $+1.8\text{ mm}$ gasket warp alert).
+     - `BtnFocusMode` at $(+18, -28, -105)$: "Focus Mode" (toggles cognitive Level-of-Detail reduction between 2-line tag and 1-line eyes-up pill).
+7. **Direct Pinch Interaction:**
+   - Pinching any `BoltNode_i` directly in 3D space triggers torque on that specific bolt. Correct sequence bolts advance; incorrect bolts trigger sequence mismatch alerts.
 
-## Done criteria
-Each one can be checked in Lens Studio's preview.
-1. Lens launches in Lens Studio Interactive Preview, presents clear 1-step onboarding, and loads the 6-card demo deck.
-2. User can target a surface in the simulated environment, pinch to pin each card, and observe the Peripheral HUD update count (e.g. 1/6 through 6/6) with placement confirmation audio/visual pulse.
-3. User can switch to Test mode where question prompts are displayed at loci while answers remain completely occluded until an explicit pinch event.
-4. User can mark cards as "Got It" or "Missed", updating the Leitner review store state and triggering immediate visual feedback.
-5. Reviewing all cards opens the Summary dashboard displaying total reviewed, remembered count, missed count, and an interactive "Review Missed" action.
+---
 
-## Out of scope
-- Real-time camera computer vision object recognition (e.g. automatically recognizing a physical kettle or laptop).
-- Speech recognition and microphone voice commands.
-- Multi-user shared session synchronization (Connected Lenses).
-- Persistent cross-session cloud anchor database.
+## 3. Method of Loci Integration (Spatial Memory Palace)
 
-## Risks and open questions
-- Real-world surface persistence across app restarts (mitigated by session-based coordinate anchoring and predictable preview test stand-in).
-- Additive display contrast in high-ambient lighting (mitigated by high-contrast dark backplates behind all text and bright typographic tokens).
+TorqueLock AR synthesizes spatial procedural training with the **Method of Loci** mnemonic:
+- **Flange as Memory Palace:** The six bolt positions serve as the 6 spatial memory locations.
+- **Learn Phase:** Introduces the star sequence by associating memorable spatial cues with each position:
+  - *Bolt 1 (12 o'clock):* "Initial Anchor — Top Origin"
+  - *Bolt 4 (6 o'clock):* "Opposing Cross — Direct Polar Balance"
+  - *Bolt 2 (2 o'clock):* "Next Pair Shift — Upper Right Companion"
+  - *Bolt 5 (8 o'clock):* "Second Polar Cross — Lower Left Counterbalance"
+  - *Bolt 3 (4 o'clock):* "Final Pair Entry — Lower Right Wing"
+  - *Bolt 6 (10 o'clock):* "Pattern Closure — Upper Left Finish"
+- **Recall Phase:** Hides all visible sequence numbers. Prompts: *"Which bolt comes next?"* The user must recall the next position from memory and pinch the correct bolt node.
+- **Practise Phase:** 3D interactive flange practice simulation with live target ring, error simulation, and multi-pass torque targets.
+- **Summary & Review Phase:** Displays total recall steps, correct vs. missed steps, sequence accuracy percentage, and Leitner 3-box review recommendations.
 
-## Build notes for CLAD
-- Build for SPECS so it runs and can be demonstrated in Lens Studio's preview. No SPECS device is available.
-- Use Spectacles Interaction Kit (SIK) and UI Kit for all interactions, so they work with the mouse in Interactive Preview and with LEAF.
-- Build any stand-in exactly as described above, and keep it obvious in the scene.
-- Use real-world scale in centimeters. Keep content inside the user's view during the main task.
-- The display is additive: black renders as transparent. Don't rely on black or very dark content to be seen; keep text light and readable from where the user stands.
-- Get the basic flow working first, then add detail.
-- Write LEAF scenarios for each done criterion, run them in preview, and report which pass. Say which criteria have no test.
-- Don't record, identify, or follow people.
+---
 
-## After the build: judge it
-This part is for you, after CLAD finishes.
+## 4. Honest Preview Sensor Stand-Ins
 
-1. **Does it work?** Ask your agent which LEAF tests passed and which done criteria have no test.
-2. **Walk around it.** Open the preview in Interactive Preview. Use WASD to move, Q and E to go down and up, and right-drag (or hold Shift) to look around. Clicking acts as a pinch. Stand where a user would and look at the task.
-3. **Ask the three questions.**
-   - Does it use what I'm looking at?
-   - Does it put something in my space, where it belongs?
-   - Does it free my hands or let me keep my eyes up?
-   - Would it be just as good on a phone? If so, what would make it need the glasses?
-4. **Check comfort.**
-   - Everything I need is in view while I do the task. Nothing sits at the edges, behind me, or stuck to my face.
-   - Every control is within reach of someone standing there.
-   - Text reads easily from where I stand. No dark UI disappearing.
-   - Things show when needed and get out of the way.
-5. **Label what you know.** Write "logic proven" next to anything the tests and preview show working, and "feel unproven" next to anything only real glasses could tell you (comfort over time, real hand tracking, real recognition).
-6. **Fix with design notes, not code.** Tell your agent what to change in design terms, for example: "Move the step card 15 cm lower and next to the pan. Make the Next button twice as big. Re-run the tests." If a fix takes under a minute, like nudging a panel, do it yourself in the scene.
-7. **Submit.** Record a video under 3 minutes of your Lens in the preview, public on YouTube. Make your repo public with your Lens Studio project and this `devpost/` folder. Details are on the hackathon site: https://learn-specs.devpost.com/resources
+- **Simulation Transparency:** Because Lens Studio's laptop preview cannot connect to a physical Bluetooth digital torque wrench or optical strain gauge, `BtnApplyTorque`, `BtnSimError`, and 3D direct pinch interactions stand in for physical wrench engagement.
+- **On-Screen Disclaimers:**
+  - `PREVIEW STAND-IN: SIMULATED BLE TORQUE WRENCH`
+  - `SIMULATION MODE — NO REAL TORQUE MEASUREMENT`
+- **Real Math & State Machine:** Star-pattern sequence logic, multi-pass progression ($35 \rightarrow 70 \rightarrow 100\text{ Nm}$), gasket imbalance deflection calculations, and cognitive LOD state machines are $100\%$ real TypeScript code (`Assets/Scripts/SequenceEngine.ts`).
+
+---
+
+## 5. Five Testable Done Criteria (Verified via LEAF Scenarios)
+
+1. **C1 (Initial Spatial Layout & Star Target #1):**
+   - On scene start, `FlangeWorkbenchAssembly` is anchored at $(0, -18, -115)\text{ cm}$, eye-level zone $(0, 0, -115)\text{ cm}$ has zero UI objects, `ActiveTargetRing` is anchored on `BoltNode_1` at $(0, -14, -130)\text{ cm}$, and `ActiveBoltSpecTag` reads `"BOLT 1 OF 6 · PASS 1\nTARGET: 35 Nm SNUG"`.
+2. **C2 (Comprehension-to-Psychomotor LOD Transition & Star Advance):**
+   - Triggering `BtnApplyTorque` (or pinching `BoltNode_1`) engages psychomotor mode (collapsing tag into `"35 Nm LOCK ✓"`), marks `BoltNode_1` with green pass badge, and moves `ActiveTargetRing` across the flange center to `BoltNode_4` at $(0, -14, -100)\text{ cm}$ (`"BOLT 2 OF 6 · PASS 1\nTARGET: 35 Nm SNUG"`).
+3. **C3 (Out-of-Sequence Gasket Warp Alert & Recovery):**
+   - Triggering `BtnSimError` (or pinching out-of-sequence `BoltNode_2` while `BoltNode_4` is active) calculates a $+1.8\text{ mm}$ gasket warp deflection, turns `GasketCrushPlane` coral red, and displays `PeripheralWarpArrow` reading `"!! SEQUENCE ERROR: UNDO BOLT 2 (-35 Nm) !!"`. Triggering `BtnApplyTorque` relieves `BoltNode_2` and restores nominal alignment.
+4. **C4 (Focus Mode Progressive Disclosure):**
+   - Triggering `BtnFocusMode` collapses `ActiveBoltSpecTag` into a compact 1-line pill (`"P1 · B1 · 35 Nm"`) while keeping the 1:1 `ActiveTargetRing` visible on the bolt head; triggering `BtnFocusMode` again restores the 2-line comprehension tag.
+5. **C5 (Full Pass Completion & Seal Summary):**
+   - Advancing through all 6 bolts in star order ($1 \rightarrow 4 \rightarrow 2 \rightarrow 5 \rightarrow 3 \rightarrow 6$) completes Pass 1 ($35\text{ Nm}$ uniform crush, $0.0\text{ mm}$ warp), transitions cleanly to Pass 2 ($70\text{ Nm}$ target on `BoltNode_1`), and after Pass 3 displays the completion banner `"FLANGE SEALED · 100 Nm · 0.0 mm WARP"`.
+6. **C6 (Ergonomic Arm Reachability):**
+   - Verified via LEAF `IkBodyInteractor` that lower-field dock buttons ($z = -105\text{ cm}$, $y = -28\text{ cm}$) are comfortably within reachable human arm biomechanics without inducing shoulder elevation fatigue (Evangelista Belo et al., CHI 2021).
+
+---
+
+## 6. Technical Safety & Industrial Validity Rules
+
+1. **Educational Simulation Only:** All numeric torque values ($35\text{ Nm}$, $70\text{ Nm}$, $100\text{ Nm}$) and the $1.8\text{ mm}$ gasket warp calculation are illustrative demo training data only.
+2. **No Real Strain Modeling:** The engine does not model non-linear material stress, fastener friction coefficients, gasket creep, or actual strain measurements.
+3. **No Safety Certification:** The application is not certified for high-pressure industrial, chemical, or aviation installations. Real-world procedures must strictly follow manufacturer specifications and **ASME PCC-1** (*Guidelines for Pressure Boundary Bolted Flange Joint Assembly*).
+
+---
+
+## 7. HCI Research Foundation & Citations
+
+1. **Lindlbauer, Feit, & Hilliges (ACM UIST 2019):** Context-Aware Online Adaptation of Mixed Reality Interfaces. *Design Implication:* Cognitive load reduction via 2-tier LOD state machine (Focus Mode).
+2. **Henderson & Feiner (IEEE TVCG 2011):** Exploring the Benefits of AR Documentation for Maintenance and Repair. *Design Implication:* Separation of Comprehension (orienting beacon) and Psychomotor (unobstructed progress ring) phases.
+3. **Bell, Feiner, & Höllerer (ACM UIST 2001) / Azuma & Furmanski (ISMAR 2003):** View Management & Label Placement. *Design Implication:* Single expanded active label, compact $+11\text{ cm}$ offset badges to prevent occlusion.
+4. **Evangelista Belo et al. (ACM CHI 2021) / Fender et al. (ISMAR 2022):** XRgonomics & ComforTable UIs. *Design Implication:* Eye level ($y = 0$) kept completely clear; interactive dock placed in lower visual field ($y = -28\text{ cm}$, $z = -105\text{ cm}$).
+5. **Gruenefeld et al. (ACM SUI 2017):** EyeSee360. *Design Implication:* Workspace constrained to forward hemisphere; high-contrast peripheral arrow for off-axis hazards.
+6. **Kim et al. (ACM SUI 2019):** Additive Optical See-Through Display Acuity. *Design Implication:* High-luminance foreground colors (#FFFFFF, #00F0FF, #4ADE80, #FF4D4D) on translucent backplates; no black text.
+7. **Krokos, Plaisant, & Varshney (Virtual Reality 2019) / Moll & Sykes (2023):** Method of Loci in Immersive Spatial Environments. *Design Implication:* 6 bolt nodes serve as physical loci for sequence recall.
+8. **De La Torre et al. (ACM CHI 2024):** LLMR: Closed-Loop Multi-Agent XR Synthesis. *Design Implication:* Decoupled pure-TypeScript domain engine with automated LEAF verification.
