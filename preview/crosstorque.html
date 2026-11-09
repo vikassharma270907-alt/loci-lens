@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CrossTorque AR — Snap SPECS 27 Interactive Optical Waveguide Simulator</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    .specs-nav-links {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+      padding: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: var(--radius-sm);
+    }
+    .specs-nav-link {
+      padding: 6px 12px;
+      font-size: 11px;
+      text-decoration: none;
+      color: var(--text-secondary);
+      border-radius: 4px;
+      transition: var(--transition-fast);
+    }
+    .specs-nav-link.active {
+      background: rgba(0, 240, 255, 0.15);
+      color: var(--accent-cyan);
+      font-weight: 600;
+      border: 1px solid rgba(0, 240, 255, 0.3);
+    }
+    .specs-nav-link:hover:not(.active) {
+      color: var(--text-pure);
+      background: rgba(255, 255, 255, 0.08);
+    }
+    .hud-edge-arrow {
+      position: absolute;
+      top: 50%;
+      right: 40px;
+      transform: translateY(-50%);
+      background: rgba(255, 230, 0, 0.15);
+      border: 2px solid #FFE600;
+      color: #FFE600;
+      padding: 10px 18px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      border-radius: 6px;
+      box-shadow: 0 0 20px rgba(255, 230, 0, 0.4);
+      display: none;
+      animation: pulseEdge 1s infinite alternate;
+      z-index: 100;
+      pointer-events: none;
+    }
+    @keyframes pulseEdge {
+      from { transform: translateY(-50%) scale(0.96); opacity: 0.85; }
+      to { transform: translateY(-50%) scale(1.04); opacity: 1; }
+    }
+    .clear-zone-indicator {
+      position: absolute;
+      left: 50%;
+      top: 42%;
+      transform: translate(-50%, -50%);
+      width: 380px;
+      height: 80px;
+      border: 1px dashed rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: rgba(255, 255, 255, 0.25);
+      font-size: 10px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .debrief-modal-overlay {
+      position: absolute;
+      left: 50%;
+      top: 48%;
+      transform: translate(-50%, -50%);
+      width: 440px;
+      background: rgba(10, 16, 26, 0.94);
+      border: 2px solid var(--accent-cyan);
+      box-shadow: 0 0 35px rgba(0, 240, 255, 0.35);
+      border-radius: 12px;
+      padding: 24px;
+      text-align: center;
+      display: none;
+      z-index: 120;
+    }
+    .debrief-modal-overlay h3 {
+      color: var(--accent-cyan);
+      font-size: 18px;
+      margin-bottom: 8px;
+      letter-spacing: 1.5px;
+    }
+    .debrief-stat-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin: 16px 0;
+      text-align: left;
+    }
+    .debrief-stat-card {
+      background: rgba(255, 255, 255, 0.05);
+      padding: 10px 14px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .debrief-stat-card .val {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-pure);
+    }
+    .debrief-stat-card .lbl {
+      font-size: 10px;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+    }
+  </style>
+</head>
+<body>
+  <!-- 3D Spatial Viewport Container -->
+  <div id="viewport-container">
+    <canvas id="renderCanvas"></canvas>
+
+    <!-- Simulated SPECS Optical Waveguide Display Frame (37° V x 32° H) -->
+    <div class="specs-waveguide-frame">
+      <div class="waveguide-corner-tr"></div>
+      <div class="waveguide-corner-bl"></div>
+      <div class="optical-crosshair"></div>
+
+      <div class="specs-badge">
+        <span class="live-beacon"></span>
+        Snap SPECS 27 Preview · 1:1 Scale @ Z = -110 cm
+      </div>
+      <div class="disclaimer-banner">PREVIEW STAND-IN: 15×7.5cm SIK DOCK BUTTONS & PINCHABLE BOLTS</div>
+      <div class="safety-banner">
+        <span>⚙️</span> ASME PCC-1 & SAE 5-BOLT STAR SEQUENCE (1-3-5-2-4)
+      </div>
+    </div>
+
+    <!-- Eye-Level Clear Zone (Y = 0 cm) -->
+    <div class="clear-zone-indicator" id="clearZoneIndicator">
+      [ Eye-Level Clear Zone · Y = 0 cm · 100% Unobstructed ]
+    </div>
+
+    <!-- Top Pass Banner (Y = +16 cm, Z = -110 cm) -->
+    <div class="active-spec-tag-hud" id="passBannerHud" style="top: 80px; left: 50%; transform: translateX(-50%); width: 340px; text-align: center;">
+      <div class="tag-header" id="passBannerHeader" style="color:#12B5CB; font-size:12px; letter-spacing:1px;">PASS 1 OF 3 · TARGET 35 Nm (SNUG)</div>
+      <div class="tag-body" id="passBannerBody" style="font-size:11px; color:#94a3b8;">5-BOLT PENTAGONAL FLANGE @ Z = -110 cm</div>
+    </div>
+
+    <!-- Out-of-FOV Directional Edge Arrow (±21 cm, Y = -6 cm) -->
+    <div class="hud-edge-arrow" id="edgeArrowHud">
+      LOOK RIGHT &gt;&gt; BOLT #3
+    </div>
+
+    <!-- Verdict / Warp Callout (Y = -22.5 cm, Z = -108 cm) -->
+    <div class="peripheral-warp-banner" id="verdictTagHud" style="bottom: 120px; left: 50%; transform: translateX(-50%); width: 420px; display: flex;">
+      <span style="font-size:16px;" id="verdictIcon">✓</span>
+      <span id="verdictText" style="font-size:12px; font-weight:600;">NOMINAL · RUNOUT 0.02 mm · TORQUE BOLT #1 (35 Nm)</span>
+    </div>
+
+    <!-- Debrief Modal Card (Hidden until all 15 steps finish) -->
+    <div class="debrief-modal-overlay" id="debriefCardOverlay">
+      <h3>SEAL VERIFIED</h3>
+      <p style="color:#94a3b8; font-size:12px;">5/5 BOLTS LOCKED @ 110 Nm (FINAL SPEC)</p>
+      <div class="debrief-stat-grid">
+        <div class="debrief-stat-card">
+          <div class="val" id="debriefRunoutVal">0.02 mm</div>
+          <div class="lbl">Flange Runout (Max 0.05 mm)</div>
+        </div>
+        <div class="debrief-stat-card">
+          <div class="val" id="debriefMistakesVal">0 Errors</div>
+          <div class="lbl">Adjacent Mistakes</div>
+        </div>
+        <div class="debrief-stat-card">
+          <div class="val">15 / 15</div>
+          <div class="lbl">Completed Star Steps</div>
+        </div>
+        <div class="debrief-stat-card">
+          <div class="val" style="color:#10B981;">PASSED</div>
+          <div class="lbl">ASME PCC-1 Compliance</div>
+        </div>
+      </div>
+      <button class="primary-btn pulse-glow" onclick="window.ctHandleFocusReset()" style="width:100%; margin-top:8px;">[RESET 3-PASS HUB]</button>
+    </div>
+
+    <!-- Lower-Field Ergonomic SIK Control Dock (Y = -29 cm, Z = -95 cm) -->
+    <div style="position:absolute; bottom:25px; left:50%; transform:translateX(-50%); display:flex; gap:16px; z-index:90;">
+      <button class="primary-btn" id="btnTorquePulse" onclick="window.ctHandleTorquePulse()" style="min-width:140px; padding:10px 14px; font-size:11px; background:rgba(0,240,255,0.18); border:1px solid #00F0FF; color:#00F0FF;">
+        [TORQUE NEXT BOLT]
+      </button>
+      <button class="primary-btn" id="btnWrongBolt" onclick="window.ctHandleWrongBolt()" style="min-width:140px; padding:10px 14px; font-size:11px; background:rgba(255,180,50,0.18); border:1px solid #FFB432; color:#FFB432;">
+        [SIMULATE WRONG BOLT]
+      </button>
+      <button class="primary-btn" id="btnFocusReset" onclick="window.ctHandleFocusReset()" style="min-width:140px; padding:10px 14px; font-size:11px; background:rgba(255,255,255,0.12); border:1px solid rgba(255,255,255,0.3); color:#fff;">
+        [FOCUS MODE / RESET]
+      </button>
+    </div>
+  </div>
+
+  <!-- Sidebar Diagnostic, State Controller & LEAF Runner -->
+  <div id="control-panel">
+    <!-- Header Deck -->
+    <div class="panel-header">
+      <div class="panel-header-top">
+        <h2>
+          <span class="gear-icon">⚡</span> CrossTorque AR
+        </h2>
+        <button id="audio-toggle-btn" class="audio-toggle-btn" onclick="window.toggleAudio()" title="Toggle Spatial Audio">
+          <div class="eq-bars">
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+            <span class="eq-bar"></span>
+          </div>
+        </button>
+      </div>
+      <p class="panel-subtitle">1:1 Star-Pattern Lug & Flange Torque Coach for Snap SPECS</p>
+    </div>
+
+    <!-- Navigation Switcher -->
+    <div class="specs-nav-links">
+      <a href="crosstorque.html" class="specs-nav-link active">5-Bolt CrossTorque</a>
+      <a href="index.html" class="specs-nav-link">6-Bolt TorqueLock</a>
+    </div>
+
+    <!-- Gaze & Preview Controls -->
+    <div class="section-card">
+      <div class="section-card-title">SPECS 27 CAMERA YAW SIMULATION</div>
+      <div style="margin: 10px 0;">
+        <div style="display:flex; justify-content:space-between; font-size:11px; color:var(--text-secondary); margin-bottom:4px;">
+          <span>Camera Yaw Orientation</span>
+          <span id="yawValueText" style="color:var(--accent-cyan); font-weight:700;">0.0° (CENTER)</span>
+        </div>
+        <input type="range" id="cameraYawSlider" min="-30" max="30" value="0" step="1" style="width:100%; accent-color:var(--accent-cyan);" oninput="window.ctSetYaw(parseFloat(this.value))">
+        <div style="display:flex; justify-content:space-between; font-size:9px; color:var(--text-muted); margin-top:2px;">
+          <span>-30° (LOOK LEFT)</span>
+          <span>0°</span>
+          <span>+30° (LOOK RIGHT)</span>
+        </div>
+      </div>
+      <p style="font-size:11px; color:var(--text-secondary); line-height:1.4;">
+        Slide beyond ±12° to trigger the out-of-FOV yellow edge arrow guiding gaze back to the active bolt.
+      </p>
+    </div>
+
+    <!-- Current State Readouts -->
+    <div class="section-card">
+      <div class="section-card-title">REAL-TIME FLANGE TELEMETRY</div>
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:8px;">
+        <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:4px;">
+          <div style="font-size:10px; color:var(--text-muted);">CURRENT PASS</div>
+          <div id="telemetryPass" style="font-size:13px; font-weight:700; color:var(--accent-cyan);">Pass 1 (35 Nm)</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:4px;">
+          <div style="font-size:10px; color:var(--text-muted);">ACTIVE TARGET</div>
+          <div id="telemetryTarget" style="font-size:13px; font-weight:700; color:#10B981;">Bolt #1</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:4px;">
+          <div style="font-size:10px; color:var(--text-muted);">FLANGE RUNOUT</div>
+          <div id="telemetryRunout" style="font-size:13px; font-weight:700; color:#10B981;">0.02 mm</div>
+        </div>
+        <div style="background:rgba(255,255,255,0.03); padding:8px; border-radius:4px;">
+          <div style="font-size:10px; color:var(--text-muted);">MISTAKES LOGGED</div>
+          <div id="telemetryErrors" style="font-size:13px; font-weight:700; color:var(--text-pure);">0</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Automated LEAF Test Runner -->
+    <div class="section-card">
+      <div class="section-card-title">AUTOMATED LEAF TEST RUNNER (LEAF 2.0.2)</div>
+      <button class="primary-btn pulse-glow" id="runLeafBtn" onclick="window.ctRunLeafSuite()" style="width:100%; margin-top:8px;">
+        RUN ALL 6 LEAF SCENARIOS
+      </button>
+
+      <div id="leafResultsList" style="margin-top:10px; font-size:11px;">
+        <div style="padding:6px; background:rgba(255,255,255,0.02); border-radius:4px; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">c1_initial_layout:</span> <span id="leafStatus1" style="color:var(--text-muted);">Ready</span>
+        </div>
+        <div style="padding:6px; background:rgba(255,255,255,0.02); border-radius:4px; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">c2_star_progression:</span> <span id="leafStatus2" style="color:var(--text-muted);">Ready</span>
+        </div>
+        <div style="padding:6px; background:rgba(255,255,255,0.02); border-radius:4px; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">c3_adjacent_error_rejection:</span> <span id="leafStatus3" style="color:var(--text-muted);">Ready</span>
+        </div>
+        <div style="padding:6px; background:rgba(255,255,255,0.02); border-radius:4px; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">c4_focus_and_edge_arrow:</span> <span id="leafStatus4" style="color:var(--text-muted);">Ready</span>
+        </div>
+        <div style="padding:6px; background:rgba(255,255,255,0.02); border-radius:4px; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">c5_full_completion_and_reset:</span> <span id="leafStatus5" style="color:var(--text-muted);">Ready</span>
+        </div>
+        <div style="padding:6px; background:rgba(255,255,255,0.02); border-radius:4px; margin-bottom:4px;">
+          <span style="color:var(--text-muted);">c6_ergonomic_reach_guard:</span> <span id="leafStatus6" style="color:var(--text-muted);">Ready</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="crosstorque-runner.js"></script>
+</body>
+</html>

@@ -35,8 +35,8 @@ jobs:
       - name: TypeScript Typecheck
         run: npm run typecheck
 
-      - name: Verify Preview and Root Assets
-        run: node -e "const fs = require('fs'); ['index.html', 'styles.css', 'preview-runner.js', 'preview/index.html', 'preview/styles.css', 'preview/preview-runner.js'].forEach(f => { if (!fs.existsSync(f)) throw new Error('Missing asset: ' + f); }); console.log('All preview assets verified successfully.');"
+      - name: Verify Release and Preview Assets
+        run: node scripts/verify-assets.cjs
 
       - name: Run TorqueLock AR Acceptance Tests
         run: npm test
